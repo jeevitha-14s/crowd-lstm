@@ -1,0 +1,25 @@
+# OS
+.DS_Store
+
+# Local Claude Code session state (not project config)
+.claude/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Raw datasets (too large for git; see README for sources)
+data/raw/crowdhuman-1/
+data/raw/shanghaitech/
+data/raw/sample.mp4
+
+# Derived tensors regenerable from data/features/ via build_forecast_dataset.py
+# and build_shanghaitech_forecast.py
+data/forecast_dataset.npz
+data/shanghaitech_forecast.npz
+
+# Intermediate YOLO training checkpoints (models/finetuned_yolov8s_cctv.pt
+# is the exported deployment copy)
+outputs/yolo_training/*/weights/
