@@ -9,17 +9,20 @@ to fall further behind on. This is what makes "real-time" a true claim
 rather than a growing backlog; the alternative (buffering/queueing) looks
 fine on a file source and silently lies on a live camera.
 
-CAVEAT worth flagging before this is trusted for anything beyond a demo:
-SequenceBuffer accumulates one entry per PROCESSED frame, not per elapsed
-video frame. The offline model (train_forecast_model.py) was trained on
-STRIDE=5 windows sampled from a continuous 30fps decode, i.e. a fixed 1/6s
-gap between consecutive samples. Under sustained frame dropping here, the
-wall-clock gap between two consecutive *processed* frames can exceed that --
-the buffer has no notion of elapsed time, only of how many frames it has
-successfully processed. This is a real train/deploy distribution shift that
-grows with drop rate; it is not fixed in this file, only documented, since
-fixing it (e.g. timestamp-based resampling) is a modeling decision beyond
-the scope of this task.
+SequenceBuffer resamples by the source video's own frame index (frame_id),
+not by how many frames were successfully processed. The offline model
+(train_forecast_model.py) was trained on STRIDE=5 windows sampled from a
+continuous 30fps decode -- a fixed 5-video-frame (1/6s) gap between samples.
+Keying the buffer on frame_id instead of push order reproduces that grid
+even when frames are dropped: each of the seq_len sample slots is filled by
+the most recent processed feature at or before its target frame_id
+(forward-fill), so a dropped frame yields a stale-but-correctly-timed sample
+instead of silently compressing the window's real time span. This isn't
+identical to the offline distribution -- a forward-filled sample is a
+stand-in, not a genuine observation at that exact frame -- but it keeps
+sample *spacing* correct, which is what the LSTM's temporal dynamics
+actually depend on; the old push-order scheme drifted in spacing without
+bound as drop rate grew.
 """
 
 import argparse
@@ -89,34 +92,56 @@ class FrameSlot:
 
 
 class SequenceBuffer:
-    """Rolling buffer of per-processed-frame feature vectors; produces a
-    (seq_len, feature_dim) model input by sampling every `stride`-th entry,
-    the same windowing build_forecast_dataset.py applies offline to a
-    pre-extracted array, just applied online to a live stream of processed
-    frames. See the module docstring for what this means under frame drops.
+    """Rolling buffer of (frame_id, feature) pairs, resampled onto the
+    trained model's fixed video-frame grid -- one sample every `stride`
+    video frames -- rather than by processing order. See the module
+    docstring for why this matters under frame drops.
     """
 
     def __init__(self, seq_len: int, stride: int, feature_dim: int) -> None:
         self.seq_len = seq_len
         self.stride = stride
         self.feature_dim = feature_dim
-        self._maxlen = (seq_len - 1) * stride + 1
-        self._buffer: Deque[np.ndarray] = deque(maxlen=self._maxlen)
+        self._span = (seq_len - 1) * stride
+        self._entries: Deque[Tuple[int, np.ndarray]] = deque()
 
-    def push(self, features: np.ndarray) -> None:
-        self._buffer.append(features)
+    def push(self, frame_id: int, features: np.ndarray) -> None:
+        self._entries.append((frame_id, features))
+        cutoff = frame_id - self._span
+        # Keep the most recent entry at-or-before cutoff (the forward-fill
+        # base for the earliest sample slot) plus everything after it; an
+        # entry is only dropped once a newer at-or-before-cutoff entry makes
+        # it redundant, which bounds the deque's size without ever discarding
+        # the base a get_sequence() call would need.
+        while len(self._entries) >= 2 and self._entries[1][0] <= cutoff:
+            self._entries.popleft()
 
     def is_ready(self) -> bool:
-        return len(self._buffer) == self._maxlen
+        if not self._entries:
+            return False
+        latest_id = self._entries[-1][0]
+        return self._entries[0][0] <= latest_id - self._span
 
     def get_sequence(self) -> np.ndarray:
-        """(seq_len, feature_dim), oldest-to-newest, ending at the most
-        recently pushed frame. Caller must check is_ready() first."""
-        arr = np.stack(self._buffer, axis=0)
-        return arr[:: self.stride]
+        """(seq_len, feature_dim), oldest-to-newest, one sample every
+        `stride` video frames ending at the most recently pushed frame_id.
+        A target frame_id with no exact push (a dropped frame) is filled
+        from the most recent processed feature at or before it. Caller must
+        check is_ready() first."""
+        latest_id = self._entries[-1][0]
+        targets = [latest_id - (self.seq_len - 1 - i) * self.stride for i in range(self.seq_len)]
+        out = np.empty((self.seq_len, self.feature_dim), dtype=np.float32)
+        idx = 0
+        current = self._entries[0][1]
+        for i, target in enumerate(targets):
+            while idx < len(self._entries) and self._entries[idx][0] <= target:
+                current = self._entries[idx][1]
+                idx += 1
+            out[i] = current
+        return out
 
     def reset(self) -> None:
-        self._buffer.clear()
+        self._entries.clear()
 
 
 class RollingStageTimer:
@@ -272,7 +297,7 @@ class StreamProcessor:
         features = self.feature_extractor.extract(detections)
         features_ms = (time.perf_counter() - t0) * 1000
 
-        self.sequence_buffer.push(features)
+        self.sequence_buffer.push(frame_id, features)
         probs: Optional[Dict[int, float]] = None
         t0 = time.perf_counter()
         if self.sequence_buffer.is_ready():
@@ -304,8 +329,9 @@ class StreamProcessor:
     def run(self, max_frames: Optional[int] = None, min_predictions: Optional[int] = None) -> None:
         """min_predictions, if set, keeps the loop running until at least
         that many LSTM forecasts have been produced (SequenceBuffer needs
-        history_span+1 processed frames before its first prediction), subject
-        to max_frames as a safety cap if both are given."""
+        its full (seq_len-1)*stride video-frame span to elapse before its
+        first prediction), subject to max_frames as a safety cap if both are
+        given."""
         self.feature_extractor.reset()
         self.sequence_buffer.reset()
         if hasattr(self.yolo.predictor, "trackers"):
@@ -355,10 +381,11 @@ class StreamProcessor:
         )
         achieved_fps = self.frames_processed / elapsed if elapsed else float("nan")
         prediction_hz = self.lstm_predictions_made / elapsed if elapsed else float("nan")
-        # SequenceBuffer needs a one-time warmup ((seq_len-1)*stride+1 processed
-        # frames) before its first prediction; averaging predictions over the
-        # whole run (including that silent warmup window) understates the
-        # steady-state rate a running deployment actually settles into.
+        # SequenceBuffer needs a one-time warmup (its (seq_len-1)*stride
+        # video-frame span to elapse) before its first prediction; averaging
+        # predictions over the whole run (including that silent warmup
+        # window) understates the steady-state rate a running deployment
+        # actually settles into.
         if self._first_prediction_time is not None and self._run_end_time is not None:
             steady_state_elapsed = self._run_end_time - self._first_prediction_time
             steady_state_hz = self.lstm_predictions_made / steady_state_elapsed if steady_state_elapsed else float("nan")

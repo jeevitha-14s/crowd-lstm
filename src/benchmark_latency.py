@@ -157,7 +157,7 @@ def run_one_config(
         features = fe.extract(detections)
         features_ms = (time.perf_counter() - t0) * 1000
 
-        seq_buf.push(features)
+        seq_buf.push(frame_id, features)
         t0 = time.perf_counter()
         if seq_buf.is_ready():
             x = torch.tensor(seq_buf.get_sequence(), dtype=torch.float32, device=device).unsqueeze(0)
