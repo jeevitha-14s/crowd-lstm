@@ -24,11 +24,26 @@ directly from files already in the repo (`outputs/reports/PAPER_RESULTS.md`,
 
 ## Slide 3 -- Abstract and Scope
 
-Most crowd-monitoring systems **detect** panic after it is already visible in
-a frame. This project reframes the problem as **forecasting**: predicting a
-panic onset *k* seconds before it happens, using only features observable
-before onset, so the output is early enough to act on rather than a
-confirmation of what a human could already see.
+Most crowd-monitoring systems **detect** panic only after it is already
+visible in a frame. This project reframes the problem as **forecasting**:
+predicting whether panic will be occurring 0-3 seconds ahead (k=0/30/60/90
+frames at 30fps), using only features observable before onset. This is a
+genuine forecast, not just fast detection -- the rigorous, held-out evidence
+is the feature-ablation study: precursor-type features (flow_magnitude:
+people speeding up) become load-bearing specifically at the longer horizons
+while current-frame features (raw person count) fade out, on the 11-fold
+leave-one-clip-out evaluation where every test clip is unseen during
+training. (The live dashboard demo shows the same qualitative pattern --
+k=30/60/90 crossing alert threshold ~10-12 frames, ~0.3-0.4s, before the
+ground-truth onset -- but that demo uses the deployment checkpoint trained
+on all 11 UMN clips, so it illustrates the *mechanism*, not independent
+generalization evidence; see the Demo section's caveat.) The horizon is
+intentionally short, not a conservative design
+choice: a lead-window sweep found genuine precursor signal in this dataset
+degrades sharply past ~90-120 frames (3-4s), so k=90 sits near the practical
+ceiling of what UMN supports. That makes the system's realistic value
+triggering automated responses (alarms, access control) at machine speed --
+not giving human authorities minutes of advance warning to intervene.
 
 **Scope:**
 - Detection + tracking: YOLOv8s (fine-tuned on CrowdHuman) + ByteTrack
@@ -198,6 +213,14 @@ kind (its "anomalies" are small-group altercations, not crowd-scale panic --
 confirmed by direct frame inspection, not just the metric). Reported
 honestly as a negative-transfer finding, not hidden.
 
+*Metric note*: the table above is the full-sample AUROC. `PAPER_RESULTS.md`
+also reports a stricter CLEAN_PRE+NEGATIVE-restricted version (excludes
+windows that already overlap the anomalous segment) that it labels "the
+honest forecasting metric" -- k=24/48/72 mean 0.540/0.557/0.602 (k=0 n/a by
+construction). It's *higher*, not lower, so this isn't a case of hiding a
+worse number -- but if asked which is authoritative, the restricted one is,
+and it's worth having ready.
+
 ### 5. Deployment latency (per-stage, CPU vs. GPU)
 
 | Resolution | Device | Total (ms) | Achieved FPS | Drop rate @ 30fps |
@@ -208,23 +231,165 @@ honestly as a negative-transfer finding, not hidden.
 GPU deployment is real-time with zero drop; CPU-only is not viable at 30fps
 input -- a concrete deployment-hardware requirement for the demo/discussion.
 
+### 6. Positioning against the base paper -- Sabih & Vishwakarma (2022) [4]
+
+[4] is a strong methodological relative -- both approaches extract
+spatial-patch motion features per frame and feed a fixed-length window into
+an LSTM -- which makes the comparison direct rather than a stretch. But it
+solves a structurally different problem: it is **bidirectional**, meaning it
+needs all 50 frames of a window, including those *after* the frame being
+labeled, before it can classify anything. Their own paper states the
+resulting ~1.7s delay is because a full window must arrive before *any*
+frame in it can be labeled -- this is retrospective classification of an
+already-captured clip, not prediction of a not-yet-observed one. It also
+reports a single 75/25 train/test split per dataset with no cross-validation
+and no variance reported.
+
+| | Sabih & Vishwakarma (2022) [4] | This work |
+|---|---|---|
+| Causality | Bidirectional -- needs future frames in-window | Strictly causal |
+| Task | Frame-level classification within an observed window | Multi-horizon forecasting (k=0/30/60/90 frames ahead) |
+| Evaluation | Single 75/25 split, no variance reported | 11-fold leave-one-clip-out, per-fold + variance reported |
+| Features | Optical-flow patch histograms only | Zone-based motion features + track-derived (stop_ratio, count) |
+| Reported metric | AUC 0.9483 (UCSD Ped-1), 0.9650 (Ped-2) | AUROC 0.963/0.882/0.791/0.734 at k=0/30/60/90 (UMN, common-fold) |
+
+**Why these numbers aren't put head-to-head**: different datasets and a
+different task definition (retrospective classification vs. forecasting) --
+a same-metric leaderboard comparison would be apples-to-oranges and a
+reviewer would flag it. The honest claim is structural: our model predicts
+before the frames it's scoring exist; theirs requires them already decoded.
+Combined with the feature-ablation and rule/logreg/LSTM ladder results
+above, this also shows *why* the gap holds -- stop_ratio and flow_magnitude
+(precursor-type signals) carry the forecasting horizons, not just raw
+person-count, which is exactly the kind of feature a bidirectional,
+single-window classifier has no structural reason to need.
+
+### 7. Positioning against the base paper -- DeepROD, Ammar & Cherif (2021) [1]
+
+[1] is genuinely causal/online (unlike [4]) -- it predicts the next single
+Gradient-of-Motion (GoM) scalar from d=5 past values via LSTM, then flags an
+anomaly if the prediction error is statistically atypical. But two things
+limit a direct comparison: it only looks ~1/30s ahead (the next frame), not
+a genuine multi-second horizon, and it is evaluated *per video*, training
+online on that same video's own first 300 frames before testing on the rest
+of that same video -- the test video is never truly held out. We
+reimplemented [1]'s method (dense optical-flow GoM feature, single-step LSTM
+regressor, Box-Cox/Mahalanobis threshold) three ways to make this precise:
+
+| Method | Protocol | Score |
+|---|---|---|
+| DeepROD [1], self-reported | Per-video online self-calibration | 0.992 avg AUC (UMN, their Table 3 -- 0.994 is their Accuracy, not AUC) |
+| DeepROD, our reimplementation | Per-video online self-calibration (same as paper) | 0.744 avg AUC |
+| DeepROD, our reimplementation | **Leave-one-clip-out (fair -- same protocol as our model)** | **0.749 AUC** |
+| This work (baseline LSTM) | Leave-one-clip-out | 0.963 (k=0) / 0.882 / 0.791 / 0.734 |
+
+Three findings, each doing different work:
+1. **Under the one fair, matched-protocol comparison, our model wins**: 0.963
+   vs. 0.749 at the horizon DeepROD's ~1-frame lookahead is closest to in
+   spirit (k=0).
+2. **DeepROD's self-reported number does not reproduce** from the paper's
+   description alone (0.992 vs. our 0.744, same easier protocol as theirs)
+   -- a citable reproducibility gap in this literature, not a claim about
+   whose method is better.
+3. **DeepROD has no mechanism for multi-second forecasting at all** -- it
+   structurally cannot answer "will this be abnormal in 1/2/3 seconds," which
+   is the gap this project's k=30/60/90 heads fill.
+
+Full per-clip results: `outputs/reports/deeprod_protocol_diagnostic.json`
+(per-video self-calibration) and `outputs/reports/deeprod_loco_comparison.json`
+(the fair LOCO row).
+
+### 8. Zero-shot external validation -- Crowd Panic Dataset (Kaggle)
+
+A separate check of generalization: the UMN-trained pipeline (unmodified,
+no fine-tuning) run end-to-end -- YOLOv8s -> ByteTrack -> FeatureExtractor
+-> SequenceBuffer -> LSTM k=0 head -- on 1,330 short phone-recorded clips
+from an unrelated, informally-labeled dataset (No Panic / Normal / Crowdy /
+Panic), completely unseen during training. Clips shorter than the model's
+145-frame warmup span are front-padded (frozen first frame) rather than
+excluded, after an initial run showed exclusion disproportionately dropped
+the shortest, most chaotic Panic clips (55% excluded) -- a real bias, not
+just a technicality (see `outputs/reports/crowd_panic_transfer.json` for
+the diagnostic).
+
+| class | n clips | mean risk (k=0) | median | % clips >0.5 |
+|---|---|---|---|---|
+| No Panic | 364 | 0.219 | 0.016 | 21.4% |
+| Normal | 526 | 0.136 | 0.006 | 11.0% |
+| Crowdy | 159 | 0.202 | 0.003 | 22.0% |
+| **Panic** | 281 | **0.530** | **0.647** | **55.5%** |
+
+**Panic vs. pooled non-panic**: median 0.647 vs. 0.007, Mann-Whitney U
+one-sided p = 1.3x10^-35. This is deliberately NOT reported as AUROC --
+these are clip-level categorical labels from an unvetted source (no
+description, unknown license, informal WhatsApp-sourced footage), not
+frame-level onset ground truth, so a proper ROC isn't well-posed here. Treat
+this as a supplementary sanity check on generalization, not benchmark-grade
+evidence: the ordering among the three non-panic classes doesn't track
+density cleanly (No Panic scores above Crowdy), only the panic/non-panic
+split is clean and strongly significant.
+
 ### Demo
-[Insert screenshots/GIF of `live_dashboard.py` running on the UMN clip here
--- I can help capture these if you run it locally and share the output.]
+
+**Working, verified end-to-end**: `src/live_dashboard.py` on the UMN video
+(`data/raw/umn/Crowd-Activity-All.avi`), 700 frames, headless render to
+`outputs/figures/live_dashboard_demo.mp4` (320x240, 15fps output, ~47s).
+Confirmed real detections, tracked IDs, and a genuine GREEN -> RED alert
+escalation matching the ground-truth panic onset -- not a placeholder run:
+
+- Frame 10 (calm): GREEN banner, near-zero per-zone probabilities.
+- Frame 350 (building): still GREEN overall, but the k=90 ("3s") horizon
+  bar has gone red and one zone hits 0.84 -- the forecast head reacting
+  ahead of the overall alert level, as designed.
+- Frame 690 (post-onset, now into clip 1's indoor scene): full RED, all
+  four horizon bars maxed (1.00/1.00/1.00/0.96), sparkline spiking,
+  tracked person boxes with IDs visible.
+
+**Caveat, worth having a ready answer for if asked**: this demo runs
+`models/umn_forecast_lstm.pt`, which per its own README is trained on
+*all 11* UMN clips with no held-out fold -- clips 0 and 1, shown in this
+demo, were both in its training set. So the alert-timing pattern (RED
+firing ~10-12 frames before the ground-truth onset) shows the *pipeline
+mechanism* working correctly end-to-end, not independent proof the
+forecast generalizes to unseen crowds -- that evidence is the LOCO AUROC
+decay (subsection 2/3) and the feature-ablation nowcast/forecast swap
+(subsection 3), where every test clip is genuinely unseen. If time allows
+before the review, a stronger version of this demo would run a specific
+LOCO fold's checkpoint (trained on the other 10 clips) against its one
+held-out clip -- ask me if you want that built.
+
+**For the live presentation**: two options.
+1. **Play the pre-rendered video** (`outputs/figures/live_dashboard_demo.mp4`)
+   -- zero risk of a live technical failure, already verified to look right.
+2. **Run it live**: `python3 -m src.live_dashboard data/raw/umn/Crowd-Activity-All.avi --realtime`
+   (drop `--headless`/`--output` to open an interactive window instead of
+   rendering to file). On this CPU-only machine, detection runs at
+   ~103-118ms/frame against a 33ms/frame budget at 30fps, so ~74% of
+   frames get dropped during real-time playback -- the dashboard still
+   updates coherently (`SequenceBuffer` forward-fills by video frame
+   position, not by how many frames were actually processed, so drops
+   don't desync the alert timeline), but the visible feed will look choppy,
+   not smooth. Worth rehearsing once before presenting live; option 1 is
+   the safer default if presentation time is tight or a smooth feed matters
+   more than "it's happening live."
 
 ---
 
 ## Slide 13 -- Remaining Modules
 
-- Controlled baseline: re-implement a single-step-ahead LSTM (DeepROD-style
-  prediction) under the *same* LOCO protocol, to get one directly comparable
-  row against related-work numbers (currently those are each paper's own
-  self-reported number on their own dataset/protocol, not a controlled
-  comparison)
+- **Resolved: DeepROD-style controlled baseline (Slide 12, subsection 7).**
+  Reimplemented and evaluated under the same LOCO protocol as our model --
+  0.749 AUC vs. our 0.963 (k=0), a directly comparable row instead of a
+  self-reported number on their own protocol. Also surfaced a reproducibility
+  gap (their 0.992 self-reported vs. our 0.744 under their own easier
+  protocol), worth mentioning if asked.
 - Statistical significance testing on AUROC (currently reported as wide
-  confidence intervals only, per Section 6/10 of `PAPER_RESULTS.md`)
+  confidence intervals only, per Section 6/10 of `PAPER_RESULTS.md`) --
+  the crowd-panic transfer test (Slide 12, subsection 8) already has this
+  (Mann-Whitney p=1.3e-35); the core UMN LOCO results still don't.
 - ShanghaiTech thin-scene reporting refinement / possible additional scene
   coverage
+- Homography-based persons/m^2 feature (on backlog, not started)
 - [ANY OTHER PLANNED WORK -- fill in]
 
 ---
@@ -235,7 +400,7 @@ input -- a concrete deployment-hardware requirement for the demo/discussion.
 
 | Task | Start | End |
 |---|---|---|
-| DeepROD-style controlled baseline reimplementation | [DATE] | [DATE] |
+| DeepROD-style controlled baseline reimplementation | done | 2026-08-23 |
 | Statistical significance testing | [DATE] | [DATE] |
 | ShanghaiTech reporting refinement | [DATE] | [DATE] |
 | Manuscript drafting | [DATE] | [DATE] |
@@ -310,3 +475,10 @@ Available: http://mha.cs.umn.edu/proj_events.shtml#crowd
 4. Actual dates for the Gantt chart.
 5. Whether you want an actual rendered architecture diagram image instead of
    the text pipeline above -- I can produce one.
+6. Whether you want the "proper" held-out demo built (a specific LOCO fold's
+   checkpoint against its one held-out clip) before the review -- the
+   current demo (Slide 12, Demo section) is genuine and working, but uses
+   the all-clips deployment checkpoint, so it's not independent
+   generalization evidence -- see that section's caveat.
+7. Watch the video I sent (`live_dashboard_demo.mp4`) yourself before
+   presenting it -- I verified it frame-by-frame, but you should see it too.

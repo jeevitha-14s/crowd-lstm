@@ -1,0 +1,147 @@
+{
+  "description": "DeepROD's method (GoM feature + single-step LSTM regressor + Box-Cox/Mahalanobis anomaly threshold) reimplemented and evaluated under this project's own leave-one-clip-out protocol -- regressor and reference distribution fit ONLY on the 10 training clips' normal-labeled windows, scored against the ENTIRE held-out clip. This is the row directly comparable to the baseline LSTM's LOCO numbers; the per-clip self-calibrated diagnostic in outputs/reports/deeprod_protocol_diagnostic.json is a different, easier protocol (matching the paper's own setup) and is not this row.",
+  "model_config": {
+    "d": 5,
+    "hidden_size": 32,
+    "num_layers": 2,
+    "epochs": 30,
+    "chi2_95_df1_threshold": 3.8415
+  },
+  "folds": [
+    {
+      "held_out_clip": 0,
+      "n_train_windows": 5973,
+      "n_test": 619,
+      "n_test_positive": 90,
+      "accuracy": 0.8869143780290791,
+      "pf": 0.11308562197092084,
+      "precision": 0.6041666666666666,
+      "recall": 0.6444444444444445,
+      "auc": 0.899915984036967
+    },
+    {
+      "held_out_clip": 1,
+      "n_train_windows": 5790,
+      "n_test": 822,
+      "n_test_positive": 110,
+      "accuracy": 0.8600973236009732,
+      "pf": 0.13990267639902676,
+      "precision": 0.44680851063829785,
+      "recall": 0.19090909090909092,
+      "auc": 0.8939223697650663
+    },
+    {
+      "held_out_clip": 2,
+      "n_train_windows": 6145,
+      "n_test": 537,
+      "n_test_positive": 180,
+      "accuracy": 0.6778398510242085,
+      "pf": 0.3221601489757914,
+      "precision": 0.5538461538461539,
+      "recall": 0.2,
+      "auc": 0.4671957671957673
+    },
+    {
+      "held_out_clip": 3,
+      "n_train_windows": 5894,
+      "n_test": 685,
+      "n_test_positive": 80,
+      "accuracy": 0.8832116788321168,
+      "pf": 0.11678832116788321,
+      "precision": 0.5,
+      "recall": 0.05,
+      "auc": 0.6524380165289255
+    },
+    {
+      "held_out_clip": 4,
+      "n_train_windows": 5950,
+      "n_test": 762,
+      "n_test_positive": 210,
+      "accuracy": 0.7152230971128609,
+      "pf": 0.2847769028871391,
+      "precision": 0.40540540540540543,
+      "recall": 0.07142857142857142,
+      "auc": 0.6741287094547965
+    },
+    {
+      "held_out_clip": 5,
+      "n_train_windows": 6009,
+      "n_test": 573,
+      "n_test_positive": 80,
+      "accuracy": 0.6561954624781849,
+      "pf": 0.343804537521815,
+      "precision": 0.06015037593984962,
+      "recall": 0.1,
+      "auc": 0.5748478701825558
+    },
+    {
+      "held_out_clip": 6,
+      "n_train_windows": 5730,
+      "n_test": 889,
+      "n_test_positive": 122,
+      "accuracy": 0.8661417322834646,
+      "pf": 0.13385826771653545,
+      "precision": 0.6363636363636364,
+      "recall": 0.05737704918032787,
+      "auc": 0.7692948896060872
+    },
+    {
+      "held_out_clip": 7,
+      "n_train_windows": 6010,
+      "n_test": 661,
+      "n_test_positive": 174,
+      "accuracy": 0.7503782148260212,
+      "pf": 0.24962178517397882,
+      "precision": 1.0,
+      "recall": 0.05172413793103448,
+      "auc": 0.7431612735726594
+    },
+    {
+      "held_out_clip": 8,
+      "n_train_windows": 5904,
+      "n_test": 636,
+      "n_test_positive": 40,
+      "accuracy": 0.9072327044025157,
+      "pf": 0.09276729559748427,
+      "precision": 0.38271604938271603,
+      "recall": 0.775,
+      "auc": 0.9105285234899329
+    },
+    {
+      "held_out_clip": 9,
+      "n_train_windows": 5845,
+      "n_test": 687,
+      "n_test_positive": 30,
+      "accuracy": 0.8995633187772926,
+      "pf": 0.10043668122270742,
+      "precision": 0.24,
+      "recall": 0.6,
+      "auc": 0.915372907153729
+    },
+    {
+      "held_out_clip": 10,
+      "n_train_windows": 5720,
+      "n_test": 802,
+      "n_test_positive": 20,
+      "accuracy": 0.9251870324189526,
+      "pf": 0.07481296758104738,
+      "precision": 0.045454545454545456,
+      "recall": 0.1,
+      "auc": 0.7352941176470589
+    }
+  ],
+  "average": {
+    "accuracy": 0.8207258903441518,
+    "pf": 0.17927410965584814,
+    "precision": 0.4431737585179338,
+    "recall": 0.25826211762667906,
+    "auc": 0.7487364026030495
+  },
+  "baseline_lstm_loco_comparison": {
+    "k0": 0.963,
+    "k30": 0.882,
+    "k60": 0.791,
+    "k90": 0.734,
+    "note": "common-fold AUROC, outputs/reports/umn_loco_results.json"
+  }
+}

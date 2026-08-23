@@ -1,5 +1,5 @@
 {
-  "description": "Zero-shot transfer test: UMN-trained pipeline (unmodified, no fine-tuning) run on https://www.kaggle.com/datasets/aj1714/crowd-panic-dataset. Rank-order comparison only -- AUROC deliberately not computed, see module docstring.",
+  "description": "Zero-shot transfer test: UMN-trained pipeline (unmodified, no fine-tuning) run on https://www.kaggle.com/datasets/aj1714/crowd-panic-dataset. Rank-order comparison only -- AUROC deliberately not computed, see module docstring. Short clips are front-padded (frozen first frame) rather than excluded -- see module docstring.",
   "source_dataset": "kaggle.com/datasets/aj1714/crowd-panic-dataset",
   "model_config": {
     "yolo_path": "models/finetuned_yolov8s_cctv.pt",
@@ -7,6 +7,7 @@
     "seq_len": 30,
     "stride": 5,
     "required_warmup_frames": 145,
+    "pad_target_frames": 150,
     "imgsz": 640,
     "conf": 0.25,
     "device": "mps"
@@ -14,35 +15,82 @@
   "aggregate_by_class": {
     "No Panic": {
       "n_total_clips": 364,
-      "n_included": 354,
-      "n_excluded": 10,
-      "exclusion_rate": 0.027472527472527472,
-      "mean_risk_k0": 0.22140376520603386,
-      "std_risk_k0": 0.3315164215650133
+      "n_included": 364,
+      "n_excluded": 0,
+      "exclusion_rate": 0.0,
+      "mean_risk_k0": 0.21875021182036267,
+      "std_risk_k0": 0.33090652415186866
     },
     "Normal": {
       "n_total_clips": 526,
-      "n_included": 339,
-      "n_excluded": 187,
-      "exclusion_rate": 0.35551330798479086,
-      "mean_risk_k0": 0.1089951910129093,
-      "std_risk_k0": 0.2678016103089573
+      "n_included": 526,
+      "n_excluded": 0,
+      "exclusion_rate": 0.0,
+      "mean_risk_k0": 0.13612610952846887,
+      "std_risk_k0": 0.2726399931928373
     },
     "Crowdy": {
       "n_total_clips": 159,
-      "n_included": 143,
-      "n_excluded": 16,
-      "exclusion_rate": 0.10062893081761007,
-      "mean_risk_k0": 0.16302616059289757,
-      "std_risk_k0": 0.3077218086482319
+      "n_included": 159,
+      "n_excluded": 0,
+      "exclusion_rate": 0.0,
+      "mean_risk_k0": 0.20207334512460404,
+      "std_risk_k0": 0.34287778995158097
     },
     "Panic": {
       "n_total_clips": 281,
-      "n_included": 127,
-      "n_excluded": 154,
-      "exclusion_rate": 0.5480427046263345,
-      "mean_risk_k0": 0.34815438661436526,
-      "std_risk_k0": 0.38003669372867516
+      "n_included": 281,
+      "n_excluded": 0,
+      "exclusion_rate": 0.0,
+      "mean_risk_k0": 0.5295925257655647,
+      "std_risk_k0": 0.3997436403012646
+    }
+  },
+  "supplementary_analysis": {
+    "per_class_median_iqr": {
+      "No Panic": {
+        "n": 364,
+        "mean": 0.21875021182036267,
+        "median": 0.015906792599707842,
+        "p25": 0.002000480378046632,
+        "p75": 0.33661906197667124,
+        "frac_above_0.5": 0.21428571428571427
+      },
+      "Normal": {
+        "n": 526,
+        "mean": 0.13612610952846887,
+        "median": 0.005813699751161039,
+        "p25": 0.0012583388306666166,
+        "p75": 0.09490215089172124,
+        "frac_above_0.5": 0.11026615969581749
+      },
+      "Crowdy": {
+        "n": 159,
+        "mean": 0.20207334512460404,
+        "median": 0.002613231775883053,
+        "p25": 0.0005735512897704861,
+        "p75": 0.300905924358873,
+        "frac_above_0.5": 0.22012578616352202
+      },
+      "Panic": {
+        "n": 281,
+        "mean": 0.5295925257655647,
+        "median": 0.6468359144670622,
+        "p25": 0.04055163585580886,
+        "p75": 0.9353654384613037,
+        "frac_above_0.5": 0.5551601423487544
+      }
+    },
+    "panic_vs_pooled_nonpanic": {
+      "non_panic_pooled_n": 1049,
+      "non_panic_pooled_mean": 0.17479225223012268,
+      "non_panic_pooled_median": 0.006662915647029877,
+      "panic_n": 281,
+      "panic_mean": 0.5295925257655647,
+      "panic_median": 0.6468359144670622,
+      "mann_whitney_u": 218293.0,
+      "p_value_one_sided_panic_greater": 1.2907571513604536e-35,
+      "test_description": "Mann-Whitney U, one-sided (panic > pooled non-panic), on per-clip mean k=0 risk scores."
     }
   },
   "per_clip": {
@@ -410,72 +458,102 @@
       {
         "filename": "VID-20250924-WA0030_clip_080.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.711862666998059
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9957482576370239,
+        "median_risk_k0": 0.9953771829605103,
+        "excluded": false,
+        "elapsed_s": 6.540607541013742
       },
       {
         "filename": "VID-20250924-WA0032_clip_001.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.691212833000463
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.037779306247830394,
+        "median_risk_k0": 0.039385147392749786,
+        "excluded": false,
+        "elapsed_s": 7.839602083986392
       },
       {
         "filename": "VID-20250924-WA0032_clip_002.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.545178249987657
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.00723906010389328,
+        "median_risk_k0": 0.0068228719756007195,
+        "excluded": false,
+        "elapsed_s": 8.915213500004029
       },
       {
         "filename": "VID-20250924-WA0032_clip_003.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.253132290992653
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.007615729328244924,
+        "median_risk_k0": 0.007414617110043764,
+        "excluded": false,
+        "elapsed_s": 7.518373166007223
       },
       {
         "filename": "VID-20250924-WA0032_clip_004.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.229942209000001
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.007444276474416256,
+        "median_risk_k0": 0.005781219340860844,
+        "excluded": false,
+        "elapsed_s": 6.5063205839833245
       },
       {
         "filename": "VID-20250924-WA0032_clip_005.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.269439499999862
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.028992970287799836,
+        "median_risk_k0": 0.02844121679663658,
+        "excluded": false,
+        "elapsed_s": 7.743439165991731
       },
       {
         "filename": "VID-20250924-WA0032_clip_006.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 6.714769041005638
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.1517347812652588,
+        "median_risk_k0": 0.14724867045879364,
+        "excluded": false,
+        "elapsed_s": 7.619388166000135
       },
       {
         "filename": "VID-20250924-WA0032_clip_007.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.777981416002149
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.004659012472257018,
+        "median_risk_k0": 0.005196857266128063,
+        "excluded": false,
+        "elapsed_s": 7.016700082982425
       },
       {
         "filename": "VID-20250924-WA0032_clip_008.mp4",
         "n_frames_source": 144,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.599662666005315
+        "n_pad_frames": 6,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.005552239250391722,
+        "median_risk_k0": 0.004408574663102627,
+        "excluded": false,
+        "elapsed_s": 6.937303707993124
       },
       {
         "filename": "VID-20250924-WA0032_clip_009.mp4",
         "n_frames_source": 96,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 3.363397499997518
+        "n_pad_frames": 54,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.0013785866089165212,
+        "median_risk_k0": 0.0013741983566433191,
+        "excluded": false,
+        "elapsed_s": 5.752916249999544
       },
       {
         "filename": "VID-20250924-WA0033_clip_001.mp4",
@@ -2954,9 +3032,12 @@
       {
         "filename": "VID-20250924-WA0002_clip_001.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.452935416993569
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.001036992995068431,
+        "median_risk_k0": 0.0009217971237376332,
+        "excluded": false,
+        "elapsed_s": 10.734864333004225
       },
       {
         "filename": "VID-20250924-WA0002_clip_002.mp4",
@@ -2969,9 +3050,12 @@
       {
         "filename": "VID-20250924-WA0002_clip_003.mp4",
         "n_frames_source": 100,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.282427917001769
+        "n_pad_frames": 50,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.6289393961429596,
+        "median_risk_k0": 0.859851598739624,
+        "excluded": false,
+        "elapsed_s": 10.030843457992887
       },
       {
         "filename": "VID-20250924-WA0006_clip_001.mp4",
@@ -3168,485 +3252,692 @@
       {
         "filename": "VID-20250924-WA0027_clip_001.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.796996874996694
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.0029454354662448168,
+        "median_risk_k0": 0.0030072866939008236,
+        "excluded": false,
+        "elapsed_s": 13.356889375019819
       },
       {
         "filename": "VID-20250924-WA0027_clip_002.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.654123707994586
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.0013079482596367598,
+        "median_risk_k0": 0.0013296524994075298,
+        "excluded": false,
+        "elapsed_s": 11.349660374980886
       },
       {
         "filename": "VID-20250924-WA0027_clip_003.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.749591875006445
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.004516390478238463,
+        "median_risk_k0": 0.004303687252104282,
+        "excluded": false,
+        "elapsed_s": 9.113458667008672
       },
       {
         "filename": "VID-20250924-WA0027_clip_004.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 7.064845917004277
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.013079125247895718,
+        "median_risk_k0": 0.011417219415307045,
+        "excluded": false,
+        "elapsed_s": 11.559166708000703
       },
       {
         "filename": "VID-20250924-WA0027_clip_005.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.721441290996154
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.005327640427276492,
+        "median_risk_k0": 0.005021132994443178,
+        "excluded": false,
+        "elapsed_s": 7.96479358401848
       },
       {
         "filename": "VID-20250924-WA0027_clip_006.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 6.043332500004908
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.001063974853605032,
+        "median_risk_k0": 0.00115353858564049,
+        "excluded": false,
+        "elapsed_s": 7.428775209002197
       },
       {
         "filename": "VID-20250924-WA0027_clip_007.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.822659915997065
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.0034944113809615373,
+        "median_risk_k0": 0.0034369472414255142,
+        "excluded": false,
+        "elapsed_s": 7.046985624998342
       },
       {
         "filename": "VID-20250924-WA0027_clip_008.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.60857029100589
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.007482785265892744,
+        "median_risk_k0": 0.0064911507070064545,
+        "excluded": false,
+        "elapsed_s": 6.591753749991767
       },
       {
         "filename": "VID-20250924-WA0027_clip_009.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.810063957993407
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.08195462375879288,
+        "median_risk_k0": 0.08280901610851288,
+        "excluded": false,
+        "elapsed_s": 6.632685416989261
       },
       {
         "filename": "VID-20250924-WA0027_clip_010.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.869453457999043
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.02426064945757389,
+        "median_risk_k0": 0.02545899525284767,
+        "excluded": false,
+        "elapsed_s": 7.810427249991335
       },
       {
         "filename": "VID-20250924-WA0027_clip_011.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.691535707999719
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.2646883249282837,
+        "median_risk_k0": 0.2698945701122284,
+        "excluded": false,
+        "elapsed_s": 6.7473437919979915
       },
       {
         "filename": "VID-20250924-WA0027_clip_012.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.697537667001598
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.6420488238334656,
+        "median_risk_k0": 0.6479957103729248,
+        "excluded": false,
+        "elapsed_s": 7.9668587500054855
       },
       {
         "filename": "VID-20250924-WA0027_clip_013.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 6.06354362500133
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.0294844102114439,
+        "median_risk_k0": 0.028112713247537613,
+        "excluded": false,
+        "elapsed_s": 8.971511542011285
       },
       {
         "filename": "VID-20250924-WA0027_clip_014.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 6.313993167001172
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.15974146872758865,
+        "median_risk_k0": 0.1431194543838501,
+        "excluded": false,
+        "elapsed_s": 11.912542292004218
       },
       {
         "filename": "VID-20250924-WA0027_clip_015.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.857606083009159
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.0006754101486876607,
+        "median_risk_k0": 0.0006545421783812344,
+        "excluded": false,
+        "elapsed_s": 8.171792250010185
       },
       {
         "filename": "VID-20250924-WA0027_clip_016.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.973885750005138
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.02759320866316557,
+        "median_risk_k0": 0.030887827277183533,
+        "excluded": false,
+        "elapsed_s": 6.677379000000656
       },
       {
         "filename": "VID-20250924-WA0027_clip_017.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.645703792004497
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.0016295218374580145,
+        "median_risk_k0": 0.001674057450145483,
+        "excluded": false,
+        "elapsed_s": 6.0218389999936335
       },
       {
         "filename": "VID-20250924-WA0027_clip_018.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.830324750000727
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.036870218627154824,
+        "median_risk_k0": 0.03667915239930153,
+        "excluded": false,
+        "elapsed_s": 6.657567208021646
       },
       {
         "filename": "VID-20250924-WA0027_clip_019.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.950627415993949
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.0065512598492205145,
+        "median_risk_k0": 0.006751998793333769,
+        "excluded": false,
+        "elapsed_s": 6.914089417026844
       },
       {
         "filename": "VID-20250924-WA0027_clip_020.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.579370375009603
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.008967676758766174,
+        "median_risk_k0": 0.007851285859942436,
+        "excluded": false,
+        "elapsed_s": 6.045028583990643
       },
       {
         "filename": "VID-20250924-WA0027_clip_021.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.735483541997382
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.47223671674728396,
+        "median_risk_k0": 0.46370729804039,
+        "excluded": false,
+        "elapsed_s": 7.6111097910034005
       },
       {
         "filename": "VID-20250924-WA0027_clip_022.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.652982208004687
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.0062695307657122615,
+        "median_risk_k0": 0.005548980087041855,
+        "excluded": false,
+        "elapsed_s": 7.181062374991598
       },
       {
         "filename": "VID-20250924-WA0027_clip_023.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.789996333012823
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.0014561255928128957,
+        "median_risk_k0": 0.00147682661190629,
+        "excluded": false,
+        "elapsed_s": 6.1395199580001645
       },
       {
         "filename": "VID-20250924-WA0027_clip_024.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.5754106670065084
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.17600869834423066,
+        "median_risk_k0": 0.177814319729805,
+        "excluded": false,
+        "elapsed_s": 6.615315834002104
       },
       {
         "filename": "VID-20250924-WA0027_clip_025.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.491887374999351
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.045327608659863475,
+        "median_risk_k0": 0.0294025968760252,
+        "excluded": false,
+        "elapsed_s": 6.186425291991327
       },
       {
         "filename": "VID-20250924-WA0027_clip_026.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.7396862500027055
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.03628315702080727,
+        "median_risk_k0": 0.03418842330574989,
+        "excluded": false,
+        "elapsed_s": 6.8368509169959
       },
       {
         "filename": "VID-20250924-WA0027_clip_027.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.703349750008783
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.23517196476459504,
+        "median_risk_k0": 0.22948265075683594,
+        "excluded": false,
+        "elapsed_s": 6.700216500001261
       },
       {
         "filename": "VID-20250924-WA0027_clip_028.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 6.016418209008407
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.011770247295498849,
+        "median_risk_k0": 0.010772939771413803,
+        "excluded": false,
+        "elapsed_s": 7.694206292013405
       },
       {
         "filename": "VID-20250924-WA0027_clip_029.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.744100708994665
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.15952715650200844,
+        "median_risk_k0": 0.15489350259304047,
+        "excluded": false,
+        "elapsed_s": 7.400672916002804
       },
       {
         "filename": "VID-20250924-WA0027_clip_030.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.605565833000583
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.0012091299169696868,
+        "median_risk_k0": 0.001208459958434105,
+        "excluded": false,
+        "elapsed_s": 9.709854625019943
       },
       {
         "filename": "VID-20250924-WA0027_clip_031.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.707793292007409
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.5861813187599182,
+        "median_risk_k0": 0.560382068157196,
+        "excluded": false,
+        "elapsed_s": 11.39908075000858
       },
       {
         "filename": "VID-20250924-WA0027_clip_032.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.710126374993706
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.7583312153816223,
+        "median_risk_k0": 0.733881950378418,
+        "excluded": false,
+        "elapsed_s": 9.275893124984577
       },
       {
         "filename": "VID-20250924-WA0027_clip_033.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.572755792003591
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.8078818917274475,
+        "median_risk_k0": 0.7769253849983215,
+        "excluded": false,
+        "elapsed_s": 7.172056457988219
       },
       {
         "filename": "VID-20250924-WA0027_clip_034.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.562080999996397
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.327507871389389,
+        "median_risk_k0": 0.3125823438167572,
+        "excluded": false,
+        "elapsed_s": 6.588186541979667
       },
       {
         "filename": "VID-20250924-WA0027_clip_035.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.6025782910001
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.7772249460220337,
+        "median_risk_k0": 0.7705183029174805,
+        "excluded": false,
+        "elapsed_s": 6.70350000000326
       },
       {
         "filename": "VID-20250924-WA0027_clip_036.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.668609374988591
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.3249853879213333,
+        "median_risk_k0": 0.32505425810813904,
+        "excluded": false,
+        "elapsed_s": 6.976451624999754
       },
       {
         "filename": "VID-20250924-WA0027_clip_037.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.8554285840073135
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.2751451015472412,
+        "median_risk_k0": 0.2629154622554779,
+        "excluded": false,
+        "elapsed_s": 6.565506666986039
       },
       {
         "filename": "VID-20250924-WA0027_clip_038.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.678927916000248
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.6658588886260987,
+        "median_risk_k0": 0.7020027041435242,
+        "excluded": false,
+        "elapsed_s": 6.045679000002565
       },
       {
         "filename": "VID-20250924-WA0027_clip_039.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.669688415990095
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.4382591605186462,
+        "median_risk_k0": 0.43383368849754333,
+        "excluded": false,
+        "elapsed_s": 6.098318458010908
       },
       {
         "filename": "VID-20250924-WA0027_clip_040.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.433495875011431
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.22057175934314727,
+        "median_risk_k0": 0.19974935054779053,
+        "excluded": false,
+        "elapsed_s": 5.9031907499884255
       },
       {
         "filename": "VID-20250924-WA0027_clip_041.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.825244040999678
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.6948047161102295,
+        "median_risk_k0": 0.7123125195503235,
+        "excluded": false,
+        "elapsed_s": 6.12673816701863
       },
       {
         "filename": "VID-20250924-WA0027_clip_042.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.588482124992879
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.908095407485962,
+        "median_risk_k0": 0.9078114628791809,
+        "excluded": false,
+        "elapsed_s": 6.176751708990196
       },
       {
         "filename": "VID-20250924-WA0027_clip_043.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 6.058994624996558
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.060878993943333626,
+        "median_risk_k0": 0.04822276160120964,
+        "excluded": false,
+        "elapsed_s": 6.815647707990138
       },
       {
         "filename": "VID-20250924-WA0027_clip_044.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 6.979551458003698
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.4594706356525421,
+        "median_risk_k0": 0.4284331500530243,
+        "excluded": false,
+        "elapsed_s": 6.859183333988767
       },
       {
         "filename": "VID-20250924-WA0027_clip_045.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 6.519970084002125
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.49065757989883424,
+        "median_risk_k0": 0.4786938428878784,
+        "excluded": false,
+        "elapsed_s": 6.692798416974256
       },
       {
         "filename": "VID-20250924-WA0027_clip_046.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 7.246510625001974
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.021078151650726795,
+        "median_risk_k0": 0.024555280804634094,
+        "excluded": false,
+        "elapsed_s": 6.455833625019295
       },
       {
         "filename": "VID-20250924-WA0027_clip_047.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.979552083997987
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.006329649593681097,
+        "median_risk_k0": 0.005580092314630747,
+        "excluded": false,
+        "elapsed_s": 6.866506499995012
       },
       {
         "filename": "VID-20250924-WA0027_clip_048.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.779489458000171
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.2438383251428604,
+        "median_risk_k0": 0.2528829276561737,
+        "excluded": false,
+        "elapsed_s": 6.508497292001266
       },
       {
         "filename": "VID-20250924-WA0027_clip_049.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.676628957997309
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.4340339541435242,
+        "median_risk_k0": 0.41511157155036926,
+        "excluded": false,
+        "elapsed_s": 6.784206042008009
       },
       {
         "filename": "VID-20250924-WA0027_clip_050.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.6554845409991685
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.0028608191758394243,
+        "median_risk_k0": 0.00263403682038188,
+        "excluded": false,
+        "elapsed_s": 6.627546665986301
       },
       {
         "filename": "VID-20250924-WA0027_clip_051.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.591259624998202
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.07680218890309334,
+        "median_risk_k0": 0.07332182675600052,
+        "excluded": false,
+        "elapsed_s": 7.5103365420072805
       },
       {
         "filename": "VID-20250924-WA0027_clip_052.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.709268416991108
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.05504253283143044,
+        "median_risk_k0": 0.05117931216955185,
+        "excluded": false,
+        "elapsed_s": 10.387953124998603
       },
       {
         "filename": "VID-20250924-WA0027_clip_053.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.661242917005438
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.30035027861595154,
+        "median_risk_k0": 0.30314454436302185,
+        "excluded": false,
+        "elapsed_s": 11.032960957993055
       },
       {
         "filename": "VID-20250924-WA0027_clip_054.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 6.127334666001843
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.012395953107625247,
+        "median_risk_k0": 0.01146920770406723,
+        "excluded": false,
+        "elapsed_s": 16.4787604160083
       },
       {
         "filename": "VID-20250924-WA0027_clip_055.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.854143332995591
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.00891781309619546,
+        "median_risk_k0": 0.00603930139914155,
+        "excluded": false,
+        "elapsed_s": 9.960481874994002
       },
       {
         "filename": "VID-20250924-WA0027_clip_056.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.628701249996084
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.17853640615940095,
+        "median_risk_k0": 0.1543954759836197,
+        "excluded": false,
+        "elapsed_s": 9.318584834021749
       },
       {
         "filename": "VID-20250924-WA0027_clip_057.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.813538582995534
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.016312131192535162,
+        "median_risk_k0": 0.01209371816366911,
+        "excluded": false,
+        "elapsed_s": 9.032101374992635
       },
       {
         "filename": "VID-20250924-WA0027_clip_058.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.763568792011938
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.3249354958534241,
+        "median_risk_k0": 0.3148740828037262,
+        "excluded": false,
+        "elapsed_s": 9.087690290994942
       },
       {
         "filename": "VID-20250924-WA0027_clip_059.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.887479083001381
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.24943838119506836,
+        "median_risk_k0": 0.2616477608680725,
+        "excluded": false,
+        "elapsed_s": 8.89926487498451
       },
       {
         "filename": "VID-20250924-WA0027_clip_060.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.854282915999647
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.029837685031816365,
+        "median_risk_k0": 0.011332432739436626,
+        "excluded": false,
+        "elapsed_s": 8.689217459002975
       },
       {
         "filename": "VID-20250924-WA0027_clip_061.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.56647887500003
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.282583025097847,
+        "median_risk_k0": 0.2736913859844208,
+        "excluded": false,
+        "elapsed_s": 8.288950082991505
       },
       {
         "filename": "VID-20250924-WA0027_clip_062.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.689574249990983
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.02750796377658844,
+        "median_risk_k0": 0.02733810804784298,
+        "excluded": false,
+        "elapsed_s": 13.97441374999471
       },
       {
         "filename": "VID-20250924-WA0027_clip_063.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.567112584001734
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.013344955258071422,
+        "median_risk_k0": 0.012698777951300144,
+        "excluded": false,
+        "elapsed_s": 14.402514457993675
       },
       {
         "filename": "VID-20250924-WA0027_clip_064.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.691768165997928
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.029645299911499022,
+        "median_risk_k0": 0.03653575852513313,
+        "excluded": false,
+        "elapsed_s": 12.450561791018117
       },
       {
         "filename": "VID-20250924-WA0027_clip_065.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.893542707999586
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.025822465494275092,
+        "median_risk_k0": 0.028204986825585365,
+        "excluded": false,
+        "elapsed_s": 15.00846808301867
       },
       {
         "filename": "VID-20250924-WA0027_clip_066.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.5374609580030665
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.1843660816550255,
+        "median_risk_k0": 0.2153090089559555,
+        "excluded": false,
+        "elapsed_s": 11.278377833979903
       },
       {
         "filename": "VID-20250924-WA0027_clip_067.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.464489999998477
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.009772238694131375,
+        "median_risk_k0": 0.007081516552716494,
+        "excluded": false,
+        "elapsed_s": 9.155507707997458
       },
       {
         "filename": "VID-20250924-WA0027_clip_068.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.783112834003987
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.01805745530873537,
+        "median_risk_k0": 0.013079504482448101,
+        "excluded": false,
+        "elapsed_s": 11.456914167007199
       },
       {
         "filename": "VID-20250924-WA0027_clip_069.mp4",
         "n_frames_source": 145,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.655688458995428
+        "n_pad_frames": 5,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.013169137109071017,
+        "median_risk_k0": 0.012932647950947285,
+        "excluded": false,
+        "elapsed_s": 8.8650382909982
       },
       {
         "filename": "VID-20250924-WA0027_clip_070.mp4",
@@ -3667,135 +3958,192 @@
       {
         "filename": "VID-20250924-WA0029_clip_001.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.087734249987989
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.0006476762238889933,
+        "median_risk_k0": 0.0006634060991927981,
+        "excluded": false,
+        "elapsed_s": 13.708070792024955
       },
       {
         "filename": "VID-20250924-WA0029_clip_002.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 6.874953167003696
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.033321488089859484,
+        "median_risk_k0": 0.03751381114125252,
+        "excluded": false,
+        "elapsed_s": 8.508833625004627
       },
       {
         "filename": "VID-20250924-WA0029_clip_003.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 7.343857250001747
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.13128069639205933,
+        "median_risk_k0": 0.13479284942150116,
+        "excluded": false,
+        "elapsed_s": 8.701456792012323
       },
       {
         "filename": "VID-20250924-WA0029_clip_004.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.586222416997771
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.02039380632340908,
+        "median_risk_k0": 0.019823336973786354,
+        "excluded": false,
+        "elapsed_s": 7.007094959000824
       },
       {
         "filename": "VID-20250924-WA0029_clip_006.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.286120083008427
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.014045618753880263,
+        "median_risk_k0": 0.008047510869801044,
+        "excluded": false,
+        "elapsed_s": 6.468180416006362
       },
       {
         "filename": "VID-20250924-WA0029_clip_007.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.3825051249878015
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.01227904250845313,
+        "median_risk_k0": 0.008955352939665318,
+        "excluded": false,
+        "elapsed_s": 6.934401417005574
       },
       {
         "filename": "VID-20250924-WA0029_clip_008.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.884345291997306
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.00674544875510037,
+        "median_risk_k0": 0.004006366245448589,
+        "excluded": false,
+        "elapsed_s": 6.2264162079954986
       },
       {
         "filename": "VID-20250924-WA0029_clip_009.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.851106332993368
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.4518152415752411,
+        "median_risk_k0": 0.44066351652145386,
+        "excluded": false,
+        "elapsed_s": 6.612859874992864
       },
       {
         "filename": "VID-20250924-WA0029_clip_010.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.829814875003649
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9968676447868348,
+        "median_risk_k0": 0.9969775676727295,
+        "excluded": false,
+        "elapsed_s": 10.678679000004195
       },
       {
         "filename": "VID-20250924-WA0029_clip_011.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.920588583001518
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.8289170384407043,
+        "median_risk_k0": 0.8442369103431702,
+        "excluded": false,
+        "elapsed_s": 9.451150750013767
       },
       {
         "filename": "VID-20250924-WA0029_clip_012.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.57120141699852
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.005479369917884469,
+        "median_risk_k0": 0.005808975547552109,
+        "excluded": false,
+        "elapsed_s": 10.313358500017785
       },
       {
         "filename": "VID-20250924-WA0029_clip_013.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.9762942920060595
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.0014131661388091742,
+        "median_risk_k0": 0.0015357286902144551,
+        "excluded": false,
+        "elapsed_s": 8.405675749992952
       },
       {
         "filename": "VID-20250924-WA0029_clip_014.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.858921042003203
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.10677452683448792,
+        "median_risk_k0": 0.10555939376354218,
+        "excluded": false,
+        "elapsed_s": 7.648130917019444
       },
       {
         "filename": "VID-20250924-WA0029_clip_015.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.814438958012033
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.007830018270760774,
+        "median_risk_k0": 0.008204659447073936,
+        "excluded": false,
+        "elapsed_s": 6.623508499993477
       },
       {
         "filename": "VID-20250924-WA0029_clip_016.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.017044624997652
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.0019049199996516108,
+        "median_risk_k0": 0.0018962783506140113,
+        "excluded": false,
+        "elapsed_s": 7.136240249994444
       },
       {
         "filename": "VID-20250924-WA0029_clip_017.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.297571416987921
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.010549541842192412,
+        "median_risk_k0": 0.011326760053634644,
+        "excluded": false,
+        "elapsed_s": 6.955105708009796
       },
       {
         "filename": "VID-20250924-WA0029_clip_018.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.3508144579973305
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.0035623968578875065,
+        "median_risk_k0": 0.003609168343245983,
+        "excluded": false,
+        "elapsed_s": 8.56093974999385
       },
       {
         "filename": "VID-20250924-WA0029_clip_019.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.987727792002261
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.0070263287518173454,
+        "median_risk_k0": 0.004731516353785992,
+        "excluded": false,
+        "elapsed_s": 7.326873082987731
       },
       {
         "filename": "VID-20250924-WA0029_clip_020.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 6.0267284590081545
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.993053388595581,
+        "median_risk_k0": 0.9926961660385132,
+        "excluded": false,
+        "elapsed_s": 11.037505415995838
       },
       {
         "filename": "VID-20250924-WA0029_clip_026.mp4",
@@ -4096,9 +4444,12 @@
       {
         "filename": "VID-20250924-WA0031_clip_001.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.843122582999058
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.7497515439987182,
+        "median_risk_k0": 0.7340286374092102,
+        "excluded": false,
+        "elapsed_s": 6.997098749998258
       },
       {
         "filename": "VID-20250924-WA0031_clip_002.mp4",
@@ -4111,9 +4462,12 @@
       {
         "filename": "VID-20250924-WA0031_clip_003.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.962197374989046
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9268298983573914,
+        "median_risk_k0": 0.9396405220031738,
+        "excluded": false,
+        "elapsed_s": 6.675932958984049
       },
       {
         "filename": "VID-20250924-WA0034_clip_001.mp4",
@@ -4694,632 +5048,902 @@
       {
         "filename": "VID-20250924-WA0036_clip_001.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.07441737499903
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.0209806720726192,
+        "median_risk_k0": 0.014595487155020237,
+        "excluded": false,
+        "elapsed_s": 7.100169249984901
       },
       {
         "filename": "VID-20250924-WA0036_clip_002.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.682371750008315
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.04512755889445543,
+        "median_risk_k0": 0.029505115002393723,
+        "excluded": false,
+        "elapsed_s": 6.86871891701594
       },
       {
         "filename": "VID-20250924-WA0036_clip_003.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.825454833990079
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.001197978458367288,
+        "median_risk_k0": 0.0011799571802839637,
+        "excluded": false,
+        "elapsed_s": 6.859854957991047
       },
       {
         "filename": "VID-20250924-WA0036_clip_004.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.433609957995941
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.0015730666927993298,
+        "median_risk_k0": 0.0014873275067657232,
+        "excluded": false,
+        "elapsed_s": 6.897755541984225
       },
       {
         "filename": "VID-20250924-WA0036_clip_005.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.184104291998665
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.11141500771045684,
+        "median_risk_k0": 0.11221006512641907,
+        "excluded": false,
+        "elapsed_s": 6.874175417004153
       },
       {
         "filename": "VID-20250924-WA0036_clip_006.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.054917957997532
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.0706022135913372,
+        "median_risk_k0": 0.07481059432029724,
+        "excluded": false,
+        "elapsed_s": 8.120441250008298
       },
       {
         "filename": "VID-20250924-WA0036_clip_007.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.137144749998697
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.09887023121118546,
+        "median_risk_k0": 0.106265127658844,
+        "excluded": false,
+        "elapsed_s": 7.768919124995591
       },
       {
         "filename": "VID-20250924-WA0036_clip_008.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.071587082988117
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.006618902739137411,
+        "median_risk_k0": 0.006572921294718981,
+        "excluded": false,
+        "elapsed_s": 12.515324624982895
       },
       {
         "filename": "VID-20250924-WA0036_clip_009.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.200835041003302
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.018263033777475356,
+        "median_risk_k0": 0.01724446564912796,
+        "excluded": false,
+        "elapsed_s": 10.011350166983902
       },
       {
         "filename": "VID-20250924-WA0036_clip_010.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 6.284367000000202
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.020772217586636544,
+        "median_risk_k0": 0.016422761604189873,
+        "excluded": false,
+        "elapsed_s": 9.367517749982653
       },
       {
         "filename": "VID-20250924-WA0036_clip_011.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.440959832994849
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.004055640706792474,
+        "median_risk_k0": 0.0038590445183217525,
+        "excluded": false,
+        "elapsed_s": 6.947352541988948
       },
       {
         "filename": "VID-20250924-WA0036_clip_012.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.063980916005676
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.0019998977659270167,
+        "median_risk_k0": 0.0019162364769726992,
+        "excluded": false,
+        "elapsed_s": 6.946550583990756
       },
       {
         "filename": "VID-20250924-WA0036_clip_013.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.016876209003385
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.0026203421875834465,
+        "median_risk_k0": 0.002767633879557252,
+        "excluded": false,
+        "elapsed_s": 6.559638958016876
       },
       {
         "filename": "VID-20250924-WA0036_clip_014.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.7956732920138165
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.0012866210890933871,
+        "median_risk_k0": 0.001327399630099535,
+        "excluded": false,
+        "elapsed_s": 6.1580355830083136
       },
       {
         "filename": "VID-20250924-WA0036_clip_015.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.002843166992534
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.0014664141461253166,
+        "median_risk_k0": 0.0014926190488040447,
+        "excluded": false,
+        "elapsed_s": 6.229010875016684
       },
       {
         "filename": "VID-20250924-WA0036_clip_016.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.2223387920093955
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.007114886352792382,
+        "median_risk_k0": 0.005110991187393665,
+        "excluded": false,
+        "elapsed_s": 7.574279042019043
       },
       {
         "filename": "VID-20250924-WA0036_clip_017.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.7959345409908565
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.002343640592880547,
+        "median_risk_k0": 0.0023071239702403545,
+        "excluded": false,
+        "elapsed_s": 7.499506541003939
       },
       {
         "filename": "VID-20250924-WA0036_clip_018.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.836511666988372
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.004634954733774066,
+        "median_risk_k0": 0.004820006899535656,
+        "excluded": false,
+        "elapsed_s": 6.2046274169988465
       },
       {
         "filename": "VID-20250924-WA0036_clip_019.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.915527999997721
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.005463973945006728,
+        "median_risk_k0": 0.005580573342740536,
+        "excluded": false,
+        "elapsed_s": 6.31760770798428
       },
       {
         "filename": "VID-20250924-WA0036_clip_020.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.930881291991682
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.21340453624725342,
+        "median_risk_k0": 0.22986361384391785,
+        "excluded": false,
+        "elapsed_s": 6.275568750017555
       },
       {
         "filename": "VID-20250924-WA0036_clip_021.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.444548125000438
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.006001789309084416,
+        "median_risk_k0": 0.004755323752760887,
+        "excluded": false,
+        "elapsed_s": 6.9006450419838075
       },
       {
         "filename": "VID-20250924-WA0036_clip_022.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.368069375006598
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.011229778733104467,
+        "median_risk_k0": 0.005848160944879055,
+        "excluded": false,
+        "elapsed_s": 6.6134389999788254
       },
       {
         "filename": "VID-20250924-WA0036_clip_023.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.040074749995256
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.004840698139742017,
+        "median_risk_k0": 0.004430341999977827,
+        "excluded": false,
+        "elapsed_s": 6.39404275000561
       },
       {
         "filename": "VID-20250924-WA0036_clip_024.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.089258207997773
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.11678441166877747,
+        "median_risk_k0": 0.11230695247650146,
+        "excluded": false,
+        "elapsed_s": 6.430967833002796
       },
       {
         "filename": "VID-20250924-WA0036_clip_025.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.99644466600148
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.048512387275695804,
+        "median_risk_k0": 0.041821520775556564,
+        "excluded": false,
+        "elapsed_s": 6.599029667006107
       },
       {
         "filename": "VID-20250924-WA0036_clip_026.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.854448790996685
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.27338902950286864,
+        "median_risk_k0": 0.26975148916244507,
+        "excluded": false,
+        "elapsed_s": 6.539094707986806
       },
       {
         "filename": "VID-20250924-WA0036_clip_027.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.086165541011724
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.015785498963668942,
+        "median_risk_k0": 0.007369347847998142,
+        "excluded": false,
+        "elapsed_s": 6.1152555419830605
       },
       {
         "filename": "VID-20250924-WA0036_clip_028.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.908579000009922
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.02457489222288132,
+        "median_risk_k0": 0.020195266231894493,
+        "excluded": false,
+        "elapsed_s": 5.948361499991734
       },
       {
         "filename": "VID-20250924-WA0036_clip_029.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.785800249999738
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.00373234786093235,
+        "median_risk_k0": 0.0036419807001948357,
+        "excluded": false,
+        "elapsed_s": 5.880972916987957
       },
       {
         "filename": "VID-20250924-WA0036_clip_030.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.920934541005408
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.11972430795431137,
+        "median_risk_k0": 0.12270905822515488,
+        "excluded": false,
+        "elapsed_s": 6.427778582990868
       },
       {
         "filename": "VID-20250924-WA0036_clip_031.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.948381915994105
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.04457951709628105,
+        "median_risk_k0": 0.04522734880447388,
+        "excluded": false,
+        "elapsed_s": 6.804834458976984
       },
       {
         "filename": "VID-20250924-WA0036_clip_032.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.791740792003111
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.09328936040401459,
+        "median_risk_k0": 0.0865698903799057,
+        "excluded": false,
+        "elapsed_s": 6.241939125000499
       },
       {
         "filename": "VID-20250924-WA0036_clip_033.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.261339333999786
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.012954910285770893,
+        "median_risk_k0": 0.01239599660038948,
+        "excluded": false,
+        "elapsed_s": 6.0480295830057
       },
       {
         "filename": "VID-20250924-WA0036_clip_034.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.989105957996799
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.3389075458049774,
+        "median_risk_k0": 0.36918920278549194,
+        "excluded": false,
+        "elapsed_s": 6.338207833992783
       },
       {
         "filename": "VID-20250924-WA0036_clip_035.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.012156208991655
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.11687981784343719,
+        "median_risk_k0": 0.11708813160657883,
+        "excluded": false,
+        "elapsed_s": 6.681952415994601
       },
       {
         "filename": "VID-20250924-WA0036_clip_036.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.8591546670068055
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.2701461672782898,
+        "median_risk_k0": 0.26971861720085144,
+        "excluded": false,
+        "elapsed_s": 6.285651832993608
       },
       {
         "filename": "VID-20250924-WA0036_clip_037.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.958562665997306
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.10093804970383644,
+        "median_risk_k0": 0.09552285075187683,
+        "excluded": false,
+        "elapsed_s": 6.032281041989336
       },
       {
         "filename": "VID-20250924-WA0036_clip_038.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.001967375006643
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.5658938169479371,
+        "median_risk_k0": 0.5340855121612549,
+        "excluded": false,
+        "elapsed_s": 6.414735375001328
       },
       {
         "filename": "VID-20250924-WA0036_clip_039.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.0952432910125935
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.018590050376951696,
+        "median_risk_k0": 0.01984766311943531,
+        "excluded": false,
+        "elapsed_s": 7.1318685410078615
       },
       {
         "filename": "VID-20250924-WA0036_clip_040.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.231142958000419
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.044441286288201806,
+        "median_risk_k0": 0.029059911146759987,
+        "excluded": false,
+        "elapsed_s": 9.885156249976717
       },
       {
         "filename": "VID-20250924-WA0036_clip_041.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.064876042000833
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.007391199748963117,
+        "median_risk_k0": 0.006734579801559448,
+        "excluded": false,
+        "elapsed_s": 8.966643166990252
       },
       {
         "filename": "VID-20250924-WA0036_clip_042.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.896705584003939
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.47261481285095214,
+        "median_risk_k0": 0.4227171242237091,
+        "excluded": false,
+        "elapsed_s": 7.783410875010304
       },
       {
         "filename": "VID-20250924-WA0036_clip_043.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.1512235419941135
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.004949065204709768,
+        "median_risk_k0": 0.00536196306347847,
+        "excluded": false,
+        "elapsed_s": 7.171188208012609
       },
       {
         "filename": "VID-20250924-WA0036_clip_044.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.077655540997512
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.0008005867945030332,
+        "median_risk_k0": 0.0008253302075900137,
+        "excluded": false,
+        "elapsed_s": 7.068115083995508
       },
       {
         "filename": "VID-20250924-WA0036_clip_045.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.835845749999862
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.001994565280620009,
+        "median_risk_k0": 0.0009707794524729252,
+        "excluded": false,
+        "elapsed_s": 6.802017583017005
       },
       {
         "filename": "VID-20250924-WA0036_clip_046.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.985427000006894
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.0023340398212894796,
+        "median_risk_k0": 0.0015733421314507723,
+        "excluded": false,
+        "elapsed_s": 7.162246708991006
       },
       {
         "filename": "VID-20250924-WA0036_clip_047.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.796294582993141
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.0008411386632360518,
+        "median_risk_k0": 0.0008662166073918343,
+        "excluded": false,
+        "elapsed_s": 6.543011041998398
       },
       {
         "filename": "VID-20250924-WA0036_clip_048.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.741595125000458
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.0013075478142127394,
+        "median_risk_k0": 0.0011809157440438867,
+        "excluded": false,
+        "elapsed_s": 8.71558054201887
       },
       {
         "filename": "VID-20250924-WA0036_clip_049.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.232731042007799
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.004180122260004282,
+        "median_risk_k0": 0.00427010515704751,
+        "excluded": false,
+        "elapsed_s": 7.189506374998018
       },
       {
         "filename": "VID-20250924-WA0036_clip_050.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.17038345799665
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.027895327913574873,
+        "median_risk_k0": 0.007554902695119381,
+        "excluded": false,
+        "elapsed_s": 6.609735333011486
       },
       {
         "filename": "VID-20250924-WA0036_clip_051.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.967382750008255
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.001439316151663661,
+        "median_risk_k0": 0.0013804006157442927,
+        "excluded": false,
+        "elapsed_s": 6.216900458995951
       },
       {
         "filename": "VID-20250924-WA0036_clip_052.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.012922124995384
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.005361626902595162,
+        "median_risk_k0": 0.00482571916654706,
+        "excluded": false,
+        "elapsed_s": 6.472248124977341
       },
       {
         "filename": "VID-20250924-WA0036_clip_053.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.812079541996354
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.16558632850646973,
+        "median_risk_k0": 0.17584845423698425,
+        "excluded": false,
+        "elapsed_s": 6.535284834011691
       },
       {
         "filename": "VID-20250924-WA0036_clip_054.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.8539929169928655
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.10280501246452331,
+        "median_risk_k0": 0.11502678692340851,
+        "excluded": false,
+        "elapsed_s": 6.376514084025985
       },
       {
         "filename": "VID-20250924-WA0036_clip_055.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.9751206249929965
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.3545276552438736,
+        "median_risk_k0": 0.31541430950164795,
+        "excluded": false,
+        "elapsed_s": 6.2040417499956675
       },
       {
         "filename": "VID-20250924-WA0036_clip_056.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.8397722500085365
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.0954397477209568,
+        "median_risk_k0": 0.09099392592906952,
+        "excluded": false,
+        "elapsed_s": 6.126265750004677
       },
       {
         "filename": "VID-20250924-WA0036_clip_057.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.574526625001454
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.0007042719633318483,
+        "median_risk_k0": 0.000662736885715276,
+        "excluded": false,
+        "elapsed_s": 5.80829437499051
       },
       {
         "filename": "VID-20250924-WA0036_clip_058.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.977653832989745
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.0010854305466637016,
+        "median_risk_k0": 0.0010890435660257936,
+        "excluded": false,
+        "elapsed_s": 5.873033000010764
       },
       {
         "filename": "VID-20250924-WA0036_clip_059.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.947898874990642
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.0016998470993712545,
+        "median_risk_k0": 0.0016035997541621327,
+        "excluded": false,
+        "elapsed_s": 5.931073375017149
       },
       {
         "filename": "VID-20250924-WA0036_clip_060.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.00506729198969
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.027360023371875285,
+        "median_risk_k0": 0.023189669474959373,
+        "excluded": false,
+        "elapsed_s": 6.3740677919995505
       },
       {
         "filename": "VID-20250924-WA0036_clip_061.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.747994833000121
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.4349839836359024,
+        "median_risk_k0": 0.4025844931602478,
+        "excluded": false,
+        "elapsed_s": 6.834807417006232
       },
       {
         "filename": "VID-20250924-WA0036_clip_062.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.799743958006729
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.14938018769025802,
+        "median_risk_k0": 0.15701167285442352,
+        "excluded": false,
+        "elapsed_s": 6.3344482079846784
       },
       {
         "filename": "VID-20250924-WA0036_clip_063.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.629682833008701
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.5319073408842087,
+        "median_risk_k0": 0.5013857483863831,
+        "excluded": false,
+        "elapsed_s": 6.143719124986092
       },
       {
         "filename": "VID-20250924-WA0036_clip_064.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.620929666998563
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.29604251980781554,
+        "median_risk_k0": 0.22795575857162476,
+        "excluded": false,
+        "elapsed_s": 6.253530958027113
       },
       {
         "filename": "VID-20250924-WA0036_clip_065.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.95673987500777
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.020737669058144094,
+        "median_risk_k0": 0.013468269258737564,
+        "excluded": false,
+        "elapsed_s": 6.414293584006373
       },
       {
         "filename": "VID-20250924-WA0036_clip_066.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.879782333999174
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.1312213808298111,
+        "median_risk_k0": 0.13510635495185852,
+        "excluded": false,
+        "elapsed_s": 13.247733208001591
       },
       {
         "filename": "VID-20250924-WA0036_clip_067.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.771361249993788
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.138295516371727,
+        "median_risk_k0": 0.13786809146404266,
+        "excluded": false,
+        "elapsed_s": 10.561543499992695
       },
       {
         "filename": "VID-20250924-WA0036_clip_068.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.162981749992468
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.2083166852593422,
+        "median_risk_k0": 0.11403109133243561,
+        "excluded": false,
+        "elapsed_s": 8.519878083985532
       },
       {
         "filename": "VID-20250924-WA0036_clip_069.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.262647666997509
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.0016063150018453599,
+        "median_risk_k0": 0.0015974515117704868,
+        "excluded": false,
+        "elapsed_s": 10.772116209001979
       },
       {
         "filename": "VID-20250924-WA0036_clip_070.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.016658708002069
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.5008674651384354,
+        "median_risk_k0": 0.35605865716934204,
+        "excluded": false,
+        "elapsed_s": 8.470497625006828
       },
       {
         "filename": "VID-20250924-WA0036_clip_071.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.172743915987667
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.3274067431688309,
+        "median_risk_k0": 0.2529013454914093,
+        "excluded": false,
+        "elapsed_s": 9.736421707988484
       },
       {
         "filename": "VID-20250924-WA0036_clip_072.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.067192999995314
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.3169820189476013,
+        "median_risk_k0": 0.257988303899765,
+        "excluded": false,
+        "elapsed_s": 7.1503714169957675
       },
       {
         "filename": "VID-20250924-WA0036_clip_073.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.620015499996953
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.027731136744841935,
+        "median_risk_k0": 0.004033332224935293,
+        "excluded": false,
+        "elapsed_s": 7.063409292022698
       },
       {
         "filename": "VID-20250924-WA0036_clip_074.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.186545916003524
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.00976217701099813,
+        "median_risk_k0": 0.006000378169119358,
+        "excluded": false,
+        "elapsed_s": 7.592088416015031
       },
       {
         "filename": "VID-20250924-WA0036_clip_075.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.914370957994834
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.05853397510945797,
+        "median_risk_k0": 0.03642254322767258,
+        "excluded": false,
+        "elapsed_s": 7.169474041991634
       },
       {
         "filename": "VID-20250924-WA0036_clip_076.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.0573689580051
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.12907978445291518,
+        "median_risk_k0": 0.10665465891361237,
+        "excluded": false,
+        "elapsed_s": 8.30166399999871
       },
       {
         "filename": "VID-20250924-WA0036_clip_077.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.97290720800811
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.3352850884199142,
+        "median_risk_k0": 0.2686615586280823,
+        "excluded": false,
+        "elapsed_s": 16.35228479100624
       },
       {
         "filename": "VID-20250924-WA0036_clip_078.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.898644750006497
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.17112428098917007,
+        "median_risk_k0": 0.1420896053314209,
+        "excluded": false,
+        "elapsed_s": 9.153478250023909
       },
       {
         "filename": "VID-20250924-WA0036_clip_079.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.279281333001563
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.8194682836532593,
+        "median_risk_k0": 0.7883740067481995,
+        "excluded": false,
+        "elapsed_s": 8.659608874993864
       },
       {
         "filename": "VID-20250924-WA0036_clip_080.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.071667541997158
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.45677465498447417,
+        "median_risk_k0": 0.3547709286212921,
+        "excluded": false,
+        "elapsed_s": 10.065926125011174
       },
       {
         "filename": "VID-20250924-WA0036_clip_081.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.894448334001936
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.00669132531620562,
+        "median_risk_k0": 0.005314718000590801,
+        "excluded": false,
+        "elapsed_s": 13.02660987499985
       },
       {
         "filename": "VID-20250924-WA0036_clip_082.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.7472272500017425
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.0013550149742513895,
+        "median_risk_k0": 0.0012899412540718913,
+        "excluded": false,
+        "elapsed_s": 10.295112040999811
       },
       {
         "filename": "VID-20250924-WA0036_clip_083.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.8080440839985386
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.001164678717032075,
+        "median_risk_k0": 0.0010795112466439605,
+        "excluded": false,
+        "elapsed_s": 6.746464875002857
       },
       {
         "filename": "VID-20250924-WA0036_clip_084.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.966912708012387
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.07454198431223631,
+        "median_risk_k0": 0.008536780253052711,
+        "excluded": false,
+        "elapsed_s": 7.195270291005727
       },
       {
         "filename": "VID-20250924-WA0036_clip_085.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.081687124999007
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9338348627090454,
+        "median_risk_k0": 0.9682621359825134,
+        "excluded": false,
+        "elapsed_s": 10.353372417011997
       },
       {
         "filename": "VID-20250924-WA0036_clip_086.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.944482292004977
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9560267567634583,
+        "median_risk_k0": 0.970240592956543,
+        "excluded": false,
+        "elapsed_s": 11.624919791996945
       },
       {
         "filename": "VID-20250924-WA0036_clip_087.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.040576375002274
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.07747728079557419,
+        "median_risk_k0": 0.07435526698827744,
+        "excluded": false,
+        "elapsed_s": 9.685696625005221
       },
       {
         "filename": "VID-20250924-WA0036_clip_088.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.9683516250079265
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.03930848594754934,
+        "median_risk_k0": 0.03778226301074028,
+        "excluded": false,
+        "elapsed_s": 8.824965250008972
       },
       {
         "filename": "VID-20250924-WA0036_clip_089.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.043312665991834
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.04313000999391079,
+        "median_risk_k0": 0.043092381209135056,
+        "excluded": false,
+        "elapsed_s": 9.044684499996947
       },
       {
         "filename": "VID-20250924-WA0036_clip_090.mp4",
         "n_frames_source": 144,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.859572000001208
+        "n_pad_frames": 6,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.012146193720400333,
+        "median_risk_k0": 0.012445351108908653,
+        "excluded": false,
+        "elapsed_s": 8.823033540975302
       },
       {
         "filename": "VID-20250924-WA0037_clip_002.mp4",
@@ -6612,30 +7236,42 @@
       {
         "filename": "VID-20251025-WA0004_clip_001.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 7.147277999989456
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.5269171237945557,
+        "median_risk_k0": 0.5088168382644653,
+        "excluded": false,
+        "elapsed_s": 8.095422084006714
       },
       {
         "filename": "VID-20251025-WA0004_clip_002.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 7.531571250001434
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9956345081329345,
+        "median_risk_k0": 0.9959359169006348,
+        "excluded": false,
+        "elapsed_s": 9.463599750015419
       },
       {
         "filename": "VID-20251025-WA0004_clip_003.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 7.759315750008682
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9992876172065734,
+        "median_risk_k0": 0.9993022680282593,
+        "excluded": false,
+        "elapsed_s": 8.36469758299063
       },
       {
         "filename": "VID-20251025-WA0004_clip_004.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 8.033916500004125
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9992032408714294,
+        "median_risk_k0": 0.9992176294326782,
+        "excluded": false,
+        "elapsed_s": 9.895884792000288
       },
       {
         "filename": "VID-20251025-WA0004_clip_005.mp4",
@@ -6648,9 +7284,12 @@
       {
         "filename": "VID-20251025-WA0004_clip_006.mp4",
         "n_frames_source": 100,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 6.350644875012222
+        "n_pad_frames": 50,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9991703510284424,
+        "median_risk_k0": 0.9991604089736938,
+        "excluded": false,
+        "elapsed_s": 7.147978749999311
       },
       {
         "filename": "VID-20251025-WA0006_clip_007.mp4",
@@ -7049,9 +7688,12 @@
       {
         "filename": "VID-20250923-WA0012_clip_003.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 15.089749332997599
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.01018156884238124,
+        "median_risk_k0": 0.007220315281301737,
+        "excluded": false,
+        "elapsed_s": 16.263821457978338
       },
       {
         "filename": "VID-20250923-WA0013_clip_001.mp4",
@@ -7160,9 +7802,12 @@
       {
         "filename": "VID-20250923-WA0018_clip_002.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 6.596383750002133
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9201154351234436,
+        "median_risk_k0": 0.9848730564117432,
+        "excluded": false,
+        "elapsed_s": 8.151774540980114
       },
       {
         "filename": "VID-20250923-WA0019_clip_001.mp4",
@@ -7207,9 +7852,12 @@
       {
         "filename": "VID-20250923-WA0019_clip_006.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 7.185611416993197
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.0008780324249528348,
+        "median_risk_k0": 0.0008673546835780144,
+        "excluded": false,
+        "elapsed_s": 7.936222999996971
       },
       {
         "filename": "VID-20250923-WA0020_clip_001.mp4",
@@ -7246,9 +7894,12 @@
       {
         "filename": "VID-20250923-WA0021_clip_002.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 6.9677072079939535
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.002578509142040275,
+        "median_risk_k0": 0.000596677593421191,
+        "excluded": false,
+        "elapsed_s": 8.110264959017513
       },
       {
         "filename": "VID-20250923-WA0022_clip_001.mp4",
@@ -7301,9 +7952,12 @@
       {
         "filename": "VID-20250923-WA0022_clip_007.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 7.054606707999483
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.987029767036438,
+        "median_risk_k0": 0.9985030889511108,
+        "excluded": false,
+        "elapsed_s": 8.16633841599105
       },
       {
         "filename": "VID-20250923-WA0026_clip_001.mp4",
@@ -7332,9 +7986,12 @@
       {
         "filename": "VID-20250923-WA0026_clip_004.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 7.369350041990401
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9819280862808227,
+        "median_risk_k0": 0.991588294506073,
+        "excluded": false,
+        "elapsed_s": 8.26486870800727
       },
       {
         "filename": "VID-20250923-WA0027_clip_001.mp4",
@@ -7427,9 +8084,12 @@
       {
         "filename": "VID-20250923-WA0030_clip_006.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 6.776254374999553
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.003952691564336419,
+        "median_risk_k0": 0.002705588238313794,
+        "excluded": false,
+        "elapsed_s": 7.805214583990164
       },
       {
         "filename": "VID-20250923-WA0031_clip_001.mp4",
@@ -7450,9 +8110,12 @@
       {
         "filename": "VID-20250923-WA0031_clip_003.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 6.3628284170117695
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.0015467172488570213,
+        "median_risk_k0": 0.0016087236581370234,
+        "excluded": false,
+        "elapsed_s": 6.2828065000067
       },
       {
         "filename": "VID-20250923-WA0032_clip_001.mp4",
@@ -7609,9 +8272,12 @@
       {
         "filename": "VID-20250924-WA0003_clip_003.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 6.966710499997134
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.8974352002143859,
+        "median_risk_k0": 0.9976701140403748,
+        "excluded": false,
+        "elapsed_s": 9.407130000006873
       },
       {
         "filename": "VID-20250924-WA0004_clip_001.mp4",
@@ -7704,37 +8370,52 @@
       {
         "filename": "VID-20250924-WA0013_clip_002.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 7.077378749992931
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.018860213831067084,
+        "median_risk_k0": 0.010742462240159512,
+        "excluded": false,
+        "elapsed_s": 7.262661624990869
       },
       {
         "filename": "VID-20250924-WA0013_clip_003.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 6.754734582995297
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.5703444622457028,
+        "median_risk_k0": 0.7867162227630615,
+        "excluded": false,
+        "elapsed_s": 9.425086750008631
       },
       {
         "filename": "VID-20250924-WA0013_clip_004.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 6.751769750000676
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.8227281779050827,
+        "median_risk_k0": 0.9877907037734985,
+        "excluded": false,
+        "elapsed_s": 7.804924041003687
       },
       {
         "filename": "VID-20250924-WA0013_clip_005.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 7.234115125000244
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.864817214012146,
+        "median_risk_k0": 0.9612471461296082,
+        "excluded": false,
+        "elapsed_s": 7.4288200000009965
       },
       {
         "filename": "VID-20250924-WA0013_clip_006.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 6.51090833399212
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.994019341468811,
+        "median_risk_k0": 0.9946020841598511,
+        "excluded": false,
+        "elapsed_s": 6.971651791012846
       },
       {
         "filename": "VID-20250924-WA0013_clip_007.mp4",
@@ -7747,9 +8428,12 @@
       {
         "filename": "VID-20250924-WA0013_clip_008.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 6.5514187499939
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.8742646694183349,
+        "median_risk_k0": 0.9164201617240906,
+        "excluded": false,
+        "elapsed_s": 7.069211458001519
       },
       {
         "filename": "VID-20250924-WA0017_clip_015.mp4",
@@ -8050,9 +8734,12 @@
       {
         "filename": "WhatsApp Video 2025-09-23 at 18.49.03_90b78793_clip_072.mp4",
         "n_frames_source": 60,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.480482958009816
+        "n_pad_frames": 90,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.8662408232688904,
+        "median_risk_k0": 0.9454600811004639,
+        "excluded": false,
+        "elapsed_s": 10.45444345800206
       },
       {
         "filename": "WhatsApp Video 2025-09-23 at 18.49.04_ad5c6978_clip_001.mp4",
@@ -8243,9 +8930,12 @@
       {
         "filename": "VID-20250923-WA0009_clip_002.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.63826891600911
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.001490525942062959,
+        "median_risk_k0": 0.00038814955041743815,
+        "excluded": false,
+        "elapsed_s": 18.249350250000134
       },
       {
         "filename": "VID-20250923-WA0016_clip_001.mp4",
@@ -8394,23 +9084,32 @@
       {
         "filename": "VID-20250923-WA0023_clip_018.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.621531166994828
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.3657332866918296,
+        "median_risk_k0": 0.04338657483458519,
+        "excluded": false,
+        "elapsed_s": 11.889091374992859
       },
       {
         "filename": "VID-20250923-WA0024_clip_001.mp4",
         "n_frames_source": 126,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.392977124996833
+        "n_pad_frames": 24,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.005705396737903356,
+        "median_risk_k0": 0.006722973193973303,
+        "excluded": false,
+        "elapsed_s": 8.892126499995356
       },
       {
         "filename": "VID-20250923-WA0024_clip_002.mp4",
         "n_frames_source": 126,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.696727249989635
+        "n_pad_frames": 24,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.0006785937875974923,
+        "median_risk_k0": 0.0006079522427171469,
+        "excluded": false,
+        "elapsed_s": 9.017186125012813
       },
       {
         "filename": "VID-20250923-WA0024_clip_003.mp4",
@@ -8423,9 +9122,12 @@
       {
         "filename": "VID-20250923-WA0024_clip_004.mp4",
         "n_frames_source": 126,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.453990834008437
+        "n_pad_frames": 24,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.8386022210121155,
+        "median_risk_k0": 0.9027851223945618,
+        "excluded": false,
+        "elapsed_s": 11.469672417006223
       },
       {
         "filename": "VID-20250923-WA0025_clip_001.mp4",
@@ -8454,44 +9156,62 @@
       {
         "filename": "VID-20250924-WA0009_clip_003.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.418550041998969
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9884959578514099,
+        "median_risk_k0": 0.9923900961875916,
+        "excluded": false,
+        "elapsed_s": 7.169992166018346
       },
       {
         "filename": "VID-20250924-WA0010_clip_001.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.87393666699063
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9862229943275451,
+        "median_risk_k0": 0.9905557036399841,
+        "excluded": false,
+        "elapsed_s": 10.40596641699085
       },
       {
         "filename": "VID-20250924-WA0010_clip_002.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.732407082992722
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.7644859433174134,
+        "median_risk_k0": 0.7699361443519592,
+        "excluded": false,
+        "elapsed_s": 17.249978958978318
       },
       {
         "filename": "VID-20250924-WA0010_clip_003.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.854911041999003
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.811142909526825,
+        "median_risk_k0": 0.8213000893592834,
+        "excluded": false,
+        "elapsed_s": 11.028599750017747
       },
       {
         "filename": "VID-20250924-WA0010_clip_004.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.100384707999183
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.1824638286838308,
+        "median_risk_k0": 0.014110986143350601,
+        "excluded": false,
+        "elapsed_s": 14.414364666008623
       },
       {
         "filename": "VID-20250924-WA0010_clip_005.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.062467708004988
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.0038127247244119644,
+        "median_risk_k0": 0.0027896661777049303,
+        "excluded": false,
+        "elapsed_s": 9.689832625008421
       },
       {
         "filename": "VID-20250924-WA0010_clip_006.mp4",
@@ -8512,16 +9232,22 @@
       {
         "filename": "VID-20250924-WA0011_clip_001.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.031506957995589
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.8632362127304077,
+        "median_risk_k0": 0.8649201393127441,
+        "excluded": false,
+        "elapsed_s": 7.081136583001353
       },
       {
         "filename": "VID-20250924-WA0011_clip_002.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.8922737919929205
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.776975405216217,
+        "median_risk_k0": 0.7720809578895569,
+        "excluded": false,
+        "elapsed_s": 7.668617124989396
       },
       {
         "filename": "VID-20250924-WA0011_clip_003.mp4",
@@ -8598,37 +9324,52 @@
       {
         "filename": "VID-20250924-WA0015_clip_001.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.265844124995056
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9972170233726502,
+        "median_risk_k0": 0.9970968961715698,
+        "excluded": false,
+        "elapsed_s": 8.701279041997623
       },
       {
         "filename": "VID-20250924-WA0015_clip_002.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.474708083012956
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9873509526252746,
+        "median_risk_k0": 0.9954493641853333,
+        "excluded": false,
+        "elapsed_s": 9.530420458002482
       },
       {
         "filename": "VID-20250924-WA0015_clip_003.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.959476332995109
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.777313980460167,
+        "median_risk_k0": 0.9452275633811951,
+        "excluded": false,
+        "elapsed_s": 11.334748167020734
       },
       {
         "filename": "VID-20250924-WA0015_clip_004.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.917192583001452
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.706297293305397,
+        "median_risk_k0": 0.9740164875984192,
+        "excluded": false,
+        "elapsed_s": 16.26672308301204
       },
       {
         "filename": "VID-20250924-WA0015_clip_005.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.845170458997018
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.72548406124115,
+        "median_risk_k0": 0.8792788982391357,
+        "excluded": false,
+        "elapsed_s": 14.21720691700466
       },
       {
         "filename": "VID-20250924-WA0015_clip_006.mp4",
@@ -8641,142 +9382,202 @@
       {
         "filename": "VID-20250924-WA0015_clip_007.mp4",
         "n_frames_source": 100,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.453564041992649
+        "n_pad_frames": 50,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9989074468612671,
+        "median_risk_k0": 0.9990023970603943,
+        "excluded": false,
+        "elapsed_s": 8.766122250002809
       },
       {
         "filename": "VID-20250924-WA0016_clip_001.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.622506125000655
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.631583321094513,
+        "median_risk_k0": 0.5959284901618958,
+        "excluded": false,
+        "elapsed_s": 7.368733542010887
       },
       {
         "filename": "VID-20250924-WA0016_clip_002.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.8192733750038315
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.0785370129160583,
+        "median_risk_k0": 0.09474904090166092,
+        "excluded": false,
+        "elapsed_s": 7.641680959000951
       },
       {
         "filename": "VID-20250924-WA0016_clip_003.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.505892540997593
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.8221169590950013,
+        "median_risk_k0": 0.826196551322937,
+        "excluded": false,
+        "elapsed_s": 8.535299750015838
       },
       {
         "filename": "VID-20250924-WA0016_clip_004.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.970100833001197
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.09053111672401429,
+        "median_risk_k0": 0.07156667113304138,
+        "excluded": false,
+        "elapsed_s": 8.096589583001332
       },
       {
         "filename": "VID-20250924-WA0016_clip_005.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.625649624998914
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9093286395072937,
+        "median_risk_k0": 0.9434146285057068,
+        "excluded": false,
+        "elapsed_s": 7.951441707991762
       },
       {
         "filename": "VID-20250924-WA0016_clip_006.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.453260708993184
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.0013451907085254788,
+        "median_risk_k0": 0.0009541052277199924,
+        "excluded": false,
+        "elapsed_s": 6.269226834003348
       },
       {
         "filename": "VID-20250924-WA0016_clip_007.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.5751089160039555
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.23968336544930935,
+        "median_risk_k0": 0.014180916361510754,
+        "excluded": false,
+        "elapsed_s": 6.468649292015471
       },
       {
         "filename": "VID-20250924-WA0016_clip_008.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.8633613330021035
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.3721581608057022,
+        "median_risk_k0": 0.38945215940475464,
+        "excluded": false,
+        "elapsed_s": 8.546242250013165
       },
       {
         "filename": "VID-20250924-WA0016_clip_009.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.539215167009388
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.8593516230583191,
+        "median_risk_k0": 0.9219765067100525,
+        "excluded": false,
+        "elapsed_s": 9.193477791006444
       },
       {
         "filename": "VID-20250924-WA0016_clip_010.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.665792832995066
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.5772737264633179,
+        "median_risk_k0": 0.5577392578125,
+        "excluded": false,
+        "elapsed_s": 7.734194040996954
       },
       {
         "filename": "VID-20250924-WA0016_clip_011.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.787242999998853
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.7590288996696473,
+        "median_risk_k0": 0.8504737615585327,
+        "excluded": false,
+        "elapsed_s": 7.135374332981883
       },
       {
         "filename": "VID-20250924-WA0016_clip_012.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.674857374993735
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.6279687404632568,
+        "median_risk_k0": 0.5875290632247925,
+        "excluded": false,
+        "elapsed_s": 13.653400209004758
       },
       {
         "filename": "VID-20250924-WA0016_clip_013.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.735949042005814
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.05622639246284962,
+        "median_risk_k0": 0.0462060421705246,
+        "excluded": false,
+        "elapsed_s": 9.072224917006679
       },
       {
         "filename": "VID-20250924-WA0016_clip_014.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.747060915993643
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.015379189979285002,
+        "median_risk_k0": 0.01477860938757658,
+        "excluded": false,
+        "elapsed_s": 14.931337749992963
       },
       {
         "filename": "VID-20250924-WA0016_clip_015.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.66566695801157
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.2586215525865555,
+        "median_risk_k0": 0.2051156461238861,
+        "excluded": false,
+        "elapsed_s": 8.809683166007744
       },
       {
         "filename": "VID-20250924-WA0016_clip_016.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 6.4857954579929356
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.3096023857593536,
+        "median_risk_k0": 0.32034316658973694,
+        "excluded": false,
+        "elapsed_s": 9.596643083001254
       },
       {
         "filename": "VID-20250924-WA0016_clip_017.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.458497708998038
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.6741187930107116,
+        "median_risk_k0": 0.6390342712402344,
+        "excluded": false,
+        "elapsed_s": 8.166727167001227
       },
       {
         "filename": "VID-20250924-WA0016_clip_018.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.247744540989515
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.20682023018598555,
+        "median_risk_k0": 0.14460596442222595,
+        "excluded": false,
+        "elapsed_s": 10.759536083991406
       },
       {
         "filename": "VID-20250924-WA0016_clip_019.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.633892540994566
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.005733145028352737,
+        "median_risk_k0": 0.0062767514027655125,
+        "excluded": false,
+        "elapsed_s": 7.83475300000282
       },
       {
         "filename": "VID-20250924-WA0017_clip_020.mp4",
@@ -8845,289 +9646,412 @@
       {
         "filename": "VID-20250924-WA0018_clip_005.mp4",
         "n_frames_source": 75,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 2.6502317499980563
+        "n_pad_frames": 75,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.6676886439323425,
+        "median_risk_k0": 0.6210678219795227,
+        "excluded": false,
+        "elapsed_s": 7.4712905419874005
       },
       {
         "filename": "VID-20250924-WA0018_clip_006.mp4",
         "n_frames_source": 75,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 2.412009042003774
+        "n_pad_frames": 75,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9124429225921631,
+        "median_risk_k0": 0.9095793962478638,
+        "excluded": false,
+        "elapsed_s": 5.897321791999275
       },
       {
         "filename": "VID-20250924-WA0018_clip_007.mp4",
         "n_frames_source": 75,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 2.9773146669904236
+        "n_pad_frames": 75,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9730751156806946,
+        "median_risk_k0": 0.972847044467926,
+        "excluded": false,
+        "elapsed_s": 6.612119041994447
       },
       {
         "filename": "VID-20250924-WA0018_clip_008.mp4",
         "n_frames_source": 75,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 2.2177740409970284
+        "n_pad_frames": 75,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9507380485534668,
+        "median_risk_k0": 0.9486415982246399,
+        "excluded": false,
+        "elapsed_s": 6.100898499978939
       },
       {
         "filename": "VID-20250924-WA0018_clip_009.mp4",
         "n_frames_source": 75,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 2.4410283750039525
+        "n_pad_frames": 75,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.7233575105667114,
+        "median_risk_k0": 0.7624948024749756,
+        "excluded": false,
+        "elapsed_s": 6.669199083989952
       },
       {
         "filename": "VID-20250924-WA0018_clip_010.mp4",
         "n_frames_source": 75,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 2.620737375007593
+        "n_pad_frames": 75,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.7371813654899597,
+        "median_risk_k0": 0.73839271068573,
+        "excluded": false,
+        "elapsed_s": 6.326405416999478
       },
       {
         "filename": "VID-20250924-WA0018_clip_011.mp4",
         "n_frames_source": 75,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 2.682942750005168
+        "n_pad_frames": 75,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.931578528881073,
+        "median_risk_k0": 0.9361518621444702,
+        "excluded": false,
+        "elapsed_s": 6.580306541000027
       },
       {
         "filename": "VID-20250924-WA0018_clip_012.mp4",
         "n_frames_source": 75,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 2.3494809999974677
+        "n_pad_frames": 75,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9091490149497986,
+        "median_risk_k0": 0.9732208251953125,
+        "excluded": false,
+        "elapsed_s": 6.616709499998251
       },
       {
         "filename": "VID-20250924-WA0018_clip_013.mp4",
         "n_frames_source": 75,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 2.375686166997184
+        "n_pad_frames": 75,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9552472710609436,
+        "median_risk_k0": 0.9525896310806274,
+        "excluded": false,
+        "elapsed_s": 6.124776833021315
       },
       {
         "filename": "VID-20250924-WA0018_clip_014.mp4",
         "n_frames_source": 75,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 2.2914564999955473
+        "n_pad_frames": 75,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9183276772499085,
+        "median_risk_k0": 0.9432749152183533,
+        "excluded": false,
+        "elapsed_s": 8.95667804099503
       },
       {
         "filename": "VID-20250924-WA0018_clip_015.mp4",
         "n_frames_source": 75,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 2.7699525420030113
+        "n_pad_frames": 75,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.6838393986225129,
+        "median_risk_k0": 0.7175999283790588,
+        "excluded": false,
+        "elapsed_s": 20.638877624995075
       },
       {
         "filename": "VID-20250924-WA0018_clip_016.mp4",
         "n_frames_source": 75,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 2.8392210000019986
+        "n_pad_frames": 75,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9328333377838135,
+        "median_risk_k0": 0.94338458776474,
+        "excluded": false,
+        "elapsed_s": 13.858306415990228
       },
       {
         "filename": "VID-20250924-WA0018_clip_017.mp4",
         "n_frames_source": 75,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 2.745380833002855
+        "n_pad_frames": 75,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.7689724266529083,
+        "median_risk_k0": 0.8085897564888,
+        "excluded": false,
+        "elapsed_s": 12.100889624998672
       },
       {
         "filename": "VID-20250924-WA0018_clip_018.mp4",
         "n_frames_source": 75,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 2.4601951250078855
+        "n_pad_frames": 75,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.8474622368812561,
+        "median_risk_k0": 0.8434754610061646,
+        "excluded": false,
+        "elapsed_s": 8.375866415997734
       },
       {
         "filename": "VID-20250924-WA0018_clip_019.mp4",
         "n_frames_source": 75,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 2.566780250010197
+        "n_pad_frames": 75,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9458861708641052,
+        "median_risk_k0": 0.9565935730934143,
+        "excluded": false,
+        "elapsed_s": 19.780632917012554
       },
       {
         "filename": "VID-20250924-WA0018_clip_020.mp4",
         "n_frames_source": 75,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 2.542476542002987
+        "n_pad_frames": 75,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9492993354797363,
+        "median_risk_k0": 0.951191782951355,
+        "excluded": false,
+        "elapsed_s": 14.913232083024923
       },
       {
         "filename": "VID-20250924-WA0018_clip_021.mp4",
         "n_frames_source": 75,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 2.5895940830087056
+        "n_pad_frames": 75,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.8428121328353881,
+        "median_risk_k0": 0.9206445813179016,
+        "excluded": false,
+        "elapsed_s": 10.367116791981971
       },
       {
         "filename": "VID-20250924-WA0018_clip_022.mp4",
         "n_frames_source": 75,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 2.510389959003078
+        "n_pad_frames": 75,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9756687641143799,
+        "median_risk_k0": 0.9748557209968567,
+        "excluded": false,
+        "elapsed_s": 9.204065750003792
       },
       {
         "filename": "VID-20250924-WA0018_clip_023.mp4",
         "n_frames_source": 75,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 2.859622957999818
+        "n_pad_frames": 75,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.6321146845817566,
+        "median_risk_k0": 0.5430388450622559,
+        "excluded": false,
+        "elapsed_s": 10.1849388339906
       },
       {
         "filename": "VID-20250924-WA0018_clip_024.mp4",
         "n_frames_source": 75,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 3.0153252500022063
+        "n_pad_frames": 75,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9405798792839051,
+        "median_risk_k0": 0.99442458152771,
+        "excluded": false,
+        "elapsed_s": 11.620593958999962
       },
       {
         "filename": "VID-20250924-WA0018_clip_025.mp4",
         "n_frames_source": 75,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 3.4252366659929976
+        "n_pad_frames": 75,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.34683852940797805,
+        "median_risk_k0": 0.3526126444339752,
+        "excluded": false,
+        "elapsed_s": 9.10596866699052
       },
       {
         "filename": "VID-20250924-WA0018_clip_026.mp4",
         "n_frames_source": 75,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 3.3119550419942243
+        "n_pad_frames": 75,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.1625638872385025,
+        "median_risk_k0": 0.17221252620220184,
+        "excluded": false,
+        "elapsed_s": 9.657850499992492
       },
       {
         "filename": "VID-20250924-WA0018_clip_027.mp4",
         "n_frames_source": 75,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 2.468861375004053
+        "n_pad_frames": 75,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9824976682662964,
+        "median_risk_k0": 0.9846292734146118,
+        "excluded": false,
+        "elapsed_s": 7.31364599999506
       },
       {
         "filename": "VID-20250924-WA0018_clip_028.mp4",
         "n_frames_source": 75,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 2.2390413749963045
+        "n_pad_frames": 75,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9478886246681213,
+        "median_risk_k0": 0.9486415982246399,
+        "excluded": false,
+        "elapsed_s": 6.671923042013077
       },
       {
         "filename": "VID-20250924-WA0018_clip_029.mp4",
         "n_frames_source": 75,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 2.9092663749906933
+        "n_pad_frames": 75,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.45151942372322085,
+        "median_risk_k0": 0.4331916868686676,
+        "excluded": false,
+        "elapsed_s": 8.859375583997462
       },
       {
         "filename": "VID-20250924-WA0018_clip_030.mp4",
         "n_frames_source": 90,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 3.1241977080062497
+        "n_pad_frames": 60,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9480286121368409,
+        "median_risk_k0": 0.9887921214103699,
+        "excluded": false,
+        "elapsed_s": 8.528963582997676
       },
       {
         "filename": "VID-20250924-WA0020_clip_001.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.807943166990299
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9986238241195678,
+        "median_risk_k0": 0.9986182451248169,
+        "excluded": false,
+        "elapsed_s": 17.956101957999635
       },
       {
         "filename": "VID-20250924-WA0020_clip_002.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.972266790995491
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9979348063468934,
+        "median_risk_k0": 0.998094379901886,
+        "excluded": false,
+        "elapsed_s": 11.561979459016584
       },
       {
         "filename": "VID-20250924-WA0020_clip_003.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.42575341599877
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.00157576990313828,
+        "median_risk_k0": 0.0015450632199645042,
+        "excluded": false,
+        "elapsed_s": 12.23309158399934
       },
       {
         "filename": "VID-20250924-WA0020_clip_004.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.198927667006501
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9966058135032654,
+        "median_risk_k0": 0.9964136481285095,
+        "excluded": false,
+        "elapsed_s": 14.949779666989343
       },
       {
         "filename": "VID-20250924-WA0020_clip_005.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 7.464153415989131
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.001086359575856477,
+        "median_risk_k0": 0.0011268899543210864,
+        "excluded": false,
+        "elapsed_s": 21.624082624999573
       },
       {
         "filename": "VID-20250924-WA0020_clip_006.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.203403541992884
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.26383279263973236,
+        "median_risk_k0": 0.2479938119649887,
+        "excluded": false,
+        "elapsed_s": 7.404121750005288
       },
       {
         "filename": "VID-20250924-WA0020_clip_007.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.058491542004049
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.13936797007918358,
+        "median_risk_k0": 0.01807156577706337,
+        "excluded": false,
+        "elapsed_s": 8.119642708013998
       },
       {
         "filename": "VID-20250924-WA0020_clip_008.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.949724292004248
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.30848615169525145,
+        "median_risk_k0": 0.3253699541091919,
+        "excluded": false,
+        "elapsed_s": 8.617104917007964
       },
       {
         "filename": "VID-20250924-WA0020_clip_009.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.289924583994434
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.24830092452466487,
+        "median_risk_k0": 0.11011970043182373,
+        "excluded": false,
+        "elapsed_s": 7.3454356669972185
       },
       {
         "filename": "VID-20250924-WA0020_clip_010.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 12.44972741699894
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.009278284944593906,
+        "median_risk_k0": 0.0039977217093110085,
+        "excluded": false,
+        "elapsed_s": 7.8553831670142245
       },
       {
         "filename": "VID-20250924-WA0020_clip_011.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 11.516168165995623
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.986669909954071,
+        "median_risk_k0": 0.9904688000679016,
+        "excluded": false,
+        "elapsed_s": 8.303618667006958
       },
       {
         "filename": "VID-20250924-WA0020_clip_012.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 6.45733795799606
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.7466178655624389,
+        "median_risk_k0": 0.7723425030708313,
+        "excluded": false,
+        "elapsed_s": 8.118295332998969
       },
       {
         "filename": "VID-20250924-WA0020_clip_013.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 6.11208758300927
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9394595623016357,
+        "median_risk_k0": 0.9547898769378662,
+        "excluded": false,
+        "elapsed_s": 12.309846916992683
       },
       {
         "filename": "VID-20250924-WA0020_clip_014.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.3398511670093285
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.8614184617996216,
+        "median_risk_k0": 0.8975672721862793,
+        "excluded": false,
+        "elapsed_s": 8.418215042009251
       },
       {
         "filename": "VID-20250924-WA0020_clip_015.mp4",
         "n_frames_source": 144,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.93824366699846
+        "n_pad_frames": 6,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.4551588460803032,
+        "median_risk_k0": 0.3818376362323761,
+        "excluded": false,
+        "elapsed_s": 8.91702558399993
       },
       {
         "filename": "VID-20250924-WA0020_clip_016.mp4",
@@ -9572,107 +10496,152 @@
       {
         "filename": "VID-20250924-WA0022_clip_015.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 12.368456874988624
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.31488659232854843,
+        "median_risk_k0": 0.33675703406333923,
+        "excluded": false,
+        "elapsed_s": 10.494170666992432
       },
       {
         "filename": "VID-20250924-WA0023_clip_001.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 12.595895165999536
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.00014950671757105738,
+        "median_risk_k0": 0.000143594661494717,
+        "excluded": false,
+        "elapsed_s": 11.24485916699632
       },
       {
         "filename": "VID-20250924-WA0023_clip_002.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 12.292454458991415
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.000653538084588945,
+        "median_risk_k0": 0.0006540732574649155,
+        "excluded": false,
+        "elapsed_s": 9.14617404199089
       },
       {
         "filename": "VID-20250924-WA0023_clip_003.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 8.061931167001603
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.29668690729886293,
+        "median_risk_k0": 0.011727162636816502,
+        "excluded": false,
+        "elapsed_s": 9.685358290997101
       },
       {
         "filename": "VID-20250924-WA0023_clip_004.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.578080749997753
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.00042130900546908376,
+        "median_risk_k0": 0.00032790738623589277,
+        "excluded": false,
+        "elapsed_s": 10.500713499990525
       },
       {
         "filename": "VID-20250924-WA0023_clip_005.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.549856083991472
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.7038807041943074,
+        "median_risk_k0": 0.8599959015846252,
+        "excluded": false,
+        "elapsed_s": 11.008037457999308
       },
       {
         "filename": "VID-20250924-WA0023_clip_006.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 6.681798666002578
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.04322405173443258,
+        "median_risk_k0": 0.04739031940698624,
+        "excluded": false,
+        "elapsed_s": 11.124318709014915
       },
       {
         "filename": "VID-20250924-WA0023_clip_007.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.812157958003809
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.8606760203838348,
+        "median_risk_k0": 0.9759815335273743,
+        "excluded": false,
+        "elapsed_s": 12.044774415990105
       },
       {
         "filename": "VID-20250924-WA0023_clip_008.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.645625916993595
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.0004793255066033453,
+        "median_risk_k0": 0.0004348350048530847,
+        "excluded": false,
+        "elapsed_s": 18.168323082994903
       },
       {
         "filename": "VID-20250924-WA0023_clip_009.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 6.102463957999134
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.0008736096089705825,
+        "median_risk_k0": 0.0008784537203609943,
+        "excluded": false,
+        "elapsed_s": 13.622502250014804
       },
       {
         "filename": "VID-20250924-WA0023_clip_010.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.966909041002509
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.8152534931898117,
+        "median_risk_k0": 0.9486067295074463,
+        "excluded": false,
+        "elapsed_s": 11.379006583010778
       },
       {
         "filename": "VID-20250924-WA0023_clip_011.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.97753829100111
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.0020080376300029455,
+        "median_risk_k0": 0.001569409272633493,
+        "excluded": false,
+        "elapsed_s": 12.149589167005615
       },
       {
         "filename": "VID-20250924-WA0023_clip_012.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 6.003078875000938
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.06594170685857534,
+        "median_risk_k0": 0.02756953425705433,
+        "excluded": false,
+        "elapsed_s": 8.068183208000846
       },
       {
         "filename": "VID-20250924-WA0023_clip_013.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.345936666999478
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.28513081818819047,
+        "median_risk_k0": 0.31491976976394653,
+        "excluded": false,
+        "elapsed_s": 7.80980937500135
       },
       {
         "filename": "VID-20250924-WA0023_clip_014.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.612309083997388
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9353654384613037,
+        "median_risk_k0": 0.9367560148239136,
+        "excluded": false,
+        "elapsed_s": 6.380094332998851
       },
       {
         "filename": "VID-20250924-WA0023_clip_016.mp4",
@@ -9685,51 +10654,72 @@
       {
         "filename": "VID-20250924-WA0024_clip_001.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.131408999994164
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9987908005714417,
+        "median_risk_k0": 0.9988376498222351,
+        "excluded": false,
+        "elapsed_s": 8.347059208987048
       },
       {
         "filename": "VID-20250924-WA0024_clip_002.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.833057750001899
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9876241445541382,
+        "median_risk_k0": 0.9865936040878296,
+        "excluded": false,
+        "elapsed_s": 8.6384251670097
       },
       {
         "filename": "VID-20250924-WA0024_clip_003.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.263173957995605
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.989153528213501,
+        "median_risk_k0": 0.9895129799842834,
+        "excluded": false,
+        "elapsed_s": 8.551744083990343
       },
       {
         "filename": "VID-20250924-WA0024_clip_004.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.2815757089992985
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9428297996520996,
+        "median_risk_k0": 0.9788873195648193,
+        "excluded": false,
+        "elapsed_s": 9.769549749995349
       },
       {
         "filename": "VID-20250924-WA0024_clip_005.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.799953167006606
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.37175451815128324,
+        "median_risk_k0": 0.15323524177074432,
+        "excluded": false,
+        "elapsed_s": 8.726581166003598
       },
       {
         "filename": "VID-20250924-WA0024_clip_006.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 6.3866613330028486
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9990038394927978,
+        "median_risk_k0": 0.9990394711494446,
+        "excluded": false,
+        "elapsed_s": 11.584408583992627
       },
       {
         "filename": "VID-20250924-WA0024_clip_007.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.22951354199904
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9948841571807862,
+        "median_risk_k0": 0.994621992111206,
+        "excluded": false,
+        "elapsed_s": 9.179575291986112
       },
       {
         "filename": "VID-20250924-WA0024_clip_008.mp4",
@@ -9926,23 +10916,32 @@
       {
         "filename": "VID-20250924-WA0025_clip_029.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.0265620410064
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9283179759979248,
+        "median_risk_k0": 0.935426652431488,
+        "excluded": false,
+        "elapsed_s": 8.418135832995176
       },
       {
         "filename": "VID-20251025-WA0002_clip_001.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.8222661659965524
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9965484976768494,
+        "median_risk_k0": 0.9961978793144226,
+        "excluded": false,
+        "elapsed_s": 8.081841417006217
       },
       {
         "filename": "VID-20251025-WA0002_clip_002.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.6039597500057425
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.10715539399534464,
+        "median_risk_k0": 0.06293273717164993,
+        "excluded": false,
+        "elapsed_s": 6.985229124984471
       },
       {
         "filename": "VID-20251025-WA0002_clip_003.mp4",
@@ -9979,401 +10978,503 @@
       {
         "filename": "VID-20251025-WA0003_clip_003.mp4",
         "n_frames_source": 120,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.277770165994298
+        "n_pad_frames": 30,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9486415982246399,
+        "median_risk_k0": 0.9486415982246399,
+        "excluded": false,
+        "elapsed_s": 6.76499516700278
       },
       {
         "filename": "VID-20251025-WA0005_clip_002.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.333492833000491
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9127168297767639,
+        "median_risk_k0": 0.936499297618866,
+        "excluded": false,
+        "elapsed_s": 6.138729375001276
       },
       {
         "filename": "VID-20251025-WA0005_clip_003.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 3.7586167499976
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9479783058166504,
+        "median_risk_k0": 0.9515066146850586,
+        "excluded": false,
+        "elapsed_s": 5.253858417010633
       },
       {
         "filename": "VID-20251025-WA0005_clip_004.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.760887625001487
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.7861830711364746,
+        "median_risk_k0": 0.7755386233329773,
+        "excluded": false,
+        "elapsed_s": 6.272275333001744
       },
       {
         "filename": "VID-20251025-WA0005_clip_005.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.100749999997788
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.5664281129837037,
+        "median_risk_k0": 0.613785982131958,
+        "excluded": false,
+        "elapsed_s": 5.357909166981699
       },
       {
         "filename": "VID-20251025-WA0005_clip_006.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.196201291997568
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9362446546554566,
+        "median_risk_k0": 0.939320981502533,
+        "excluded": false,
+        "elapsed_s": 5.567636000021594
       },
       {
         "filename": "VID-20251025-WA0005_clip_007.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.592352542007575
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.6112550020217895,
+        "median_risk_k0": 0.5265840888023376,
+        "excluded": false,
+        "elapsed_s": 5.366500750009436
       },
       {
         "filename": "VID-20251025-WA0005_clip_008.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.197229792000144
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.6815115928649902,
+        "median_risk_k0": 0.6985099911689758,
+        "excluded": false,
+        "elapsed_s": 5.491635500016855
       },
       {
         "filename": "VID-20251025-WA0005_clip_009.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.039599124997039
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.060586147010326385,
+        "median_risk_k0": 0.05340665578842163,
+        "excluded": false,
+        "elapsed_s": 6.23474633297883
       },
       {
         "filename": "VID-20251025-WA0005_clip_010.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 3.904300374997547
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.942562460899353,
+        "median_risk_k0": 0.9450243711471558,
+        "excluded": false,
+        "elapsed_s": 4.763136833003955
       },
       {
         "filename": "VID-20251025-WA0005_clip_011.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.339903959000367
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9253179788589477,
+        "median_risk_k0": 0.9299757480621338,
+        "excluded": false,
+        "elapsed_s": 4.9401514590135776
       },
       {
         "filename": "VID-20251025-WA0005_clip_012.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 3.8582321669964585
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.5638171255588531,
+        "median_risk_k0": 0.4442533254623413,
+        "excluded": false,
+        "elapsed_s": 4.8136562909930944
       },
       {
         "filename": "VID-20251025-WA0005_clip_013.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.495048583004973
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9520946860313415,
+        "median_risk_k0": 0.951963484287262,
+        "excluded": false,
+        "elapsed_s": 5.128238292003516
       },
       {
         "filename": "VID-20251025-WA0005_clip_014.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.070252083998639
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9138002634048462,
+        "median_risk_k0": 0.9334390759468079,
+        "excluded": false,
+        "elapsed_s": 5.592649792000884
       },
       {
         "filename": "VID-20251025-WA0005_clip_015.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.009033124995767
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9575480699539185,
+        "median_risk_k0": 0.9550472497940063,
+        "excluded": false,
+        "elapsed_s": 5.091794292005943
       },
       {
         "filename": "VID-20251025-WA0005_clip_016.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.39237862500886
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9581662774085998,
+        "median_risk_k0": 0.9556512236595154,
+        "excluded": false,
+        "elapsed_s": 5.6210526670038234
       },
       {
         "filename": "VID-20251025-WA0005_clip_017.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 3.833849167000153
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9562010049819947,
+        "median_risk_k0": 0.9614238739013672,
+        "excluded": false,
+        "elapsed_s": 4.789375791995553
       },
       {
         "filename": "VID-20251025-WA0005_clip_018.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 3.989825665994431
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9128091931343079,
+        "median_risk_k0": 0.9267284870147705,
+        "excluded": false,
+        "elapsed_s": 5.0550212499802
       },
       {
         "filename": "VID-20251025-WA0005_clip_019.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.2537873330002185
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9859365582466125,
+        "median_risk_k0": 0.9843473434448242,
+        "excluded": false,
+        "elapsed_s": 4.905961207987275
       },
       {
         "filename": "VID-20251025-WA0005_clip_020.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.0643764170090435
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.8893027782440186,
+        "median_risk_k0": 0.9180554747581482,
+        "excluded": false,
+        "elapsed_s": 5.290461541997502
       },
       {
         "filename": "VID-20251025-WA0005_clip_021.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.4615409999969415
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9146585941314698,
+        "median_risk_k0": 0.9177154302597046,
+        "excluded": false,
+        "elapsed_s": 4.895701667002868
       },
       {
         "filename": "VID-20251025-WA0005_clip_022.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.431835666997358
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9393161177635193,
+        "median_risk_k0": 0.9399904012680054,
+        "excluded": false,
+        "elapsed_s": 4.874208749999525
       },
       {
         "filename": "VID-20251025-WA0005_clip_023.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 5.228026707991376
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9746270895004272,
+        "median_risk_k0": 0.9733161330223083,
+        "excluded": false,
+        "elapsed_s": 5.271520457987208
       },
       {
         "filename": "VID-20251025-WA0005_clip_024.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 3.9481530000048224
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9505977749824523,
+        "median_risk_k0": 0.9492839574813843,
+        "excluded": false,
+        "elapsed_s": 4.754078916012077
       },
       {
         "filename": "VID-20251025-WA0005_clip_025.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 3.849574624997331
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9221267938613892,
+        "median_risk_k0": 0.9343248009681702,
+        "excluded": false,
+        "elapsed_s": 4.78151066598366
       },
       {
         "filename": "VID-20251025-WA0005_clip_026.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 3.9386345420061843
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9344077825546264,
+        "median_risk_k0": 0.9615859985351562,
+        "excluded": false,
+        "elapsed_s": 5.2461600830138195
       },
       {
         "filename": "VID-20251025-WA0005_clip_027.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.2452542500104755
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9945130467414856,
+        "median_risk_k0": 0.9947029948234558,
+        "excluded": false,
+        "elapsed_s": 5.319957791012712
       },
       {
         "filename": "VID-20251025-WA0005_clip_028.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 3.848644792000414
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.8541808009147644,
+        "median_risk_k0": 0.8448438048362732,
+        "excluded": false,
+        "elapsed_s": 5.063253875006922
       },
       {
         "filename": "VID-20251025-WA0005_clip_029.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 3.7168544590094825
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9586702704429626,
+        "median_risk_k0": 0.9518072009086609,
+        "excluded": false,
+        "elapsed_s": 5.09631975000957
       },
       {
         "filename": "VID-20251025-WA0005_clip_030.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.388099208998028
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.828268563747406,
+        "median_risk_k0": 0.8659995794296265,
+        "excluded": false,
+        "elapsed_s": 8.506570749974344
       },
       {
         "filename": "VID-20251025-WA0005_clip_031.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 3.7940205419872655
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9575371384620667,
+        "median_risk_k0": 0.9516261219978333,
+        "excluded": false,
+        "elapsed_s": 6.3171929589880165
       },
       {
         "filename": "VID-20251025-WA0005_clip_032.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 3.8567935830069473
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9560957431793213,
+        "median_risk_k0": 0.9515787363052368,
+        "excluded": false,
+        "elapsed_s": 5.739824833988678
       },
       {
         "filename": "VID-20251025-WA0005_clip_033.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 3.8639740830112714
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.961015772819519,
+        "median_risk_k0": 0.9674965143203735,
+        "excluded": false,
+        "elapsed_s": 5.586137832986424
       },
       {
         "filename": "VID-20251025-WA0005_clip_034.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.438727041997481
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9763388276100159,
+        "median_risk_k0": 0.9761062264442444,
+        "excluded": false,
+        "elapsed_s": 5.473825207998743
       },
       {
         "filename": "VID-20251025-WA0005_clip_035.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.188945999994758
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9170496821403503,
+        "median_risk_k0": 0.9420429468154907,
+        "excluded": false,
+        "elapsed_s": 4.898275208979612
       },
       {
         "filename": "VID-20251025-WA0005_clip_036.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 3.965710374992341
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9726180553436279,
+        "median_risk_k0": 0.971492350101471,
+        "excluded": false,
+        "elapsed_s": 5.38110116700409
       },
       {
         "filename": "VID-20251025-WA0005_clip_037.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.259328166997875
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.7363422751426697,
+        "median_risk_k0": 0.7577764391899109,
+        "excluded": false,
+        "elapsed_s": 5.463863292010501
       },
       {
         "filename": "VID-20251025-WA0005_clip_038.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 3.9270831659960095
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9602396607398986,
+        "median_risk_k0": 0.9601063132286072,
+        "excluded": false,
+        "elapsed_s": 5.112775999994483
       },
       {
         "filename": "VID-20251025-WA0005_clip_039.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 3.701251124992268
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9622036457061768,
+        "median_risk_k0": 0.9686778783798218,
+        "excluded": false,
+        "elapsed_s": 4.926607833011076
       },
       {
         "filename": "VID-20251025-WA0005_clip_040.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.4026849170040805
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.7840860247611999,
+        "median_risk_k0": 0.8465177416801453,
+        "excluded": false,
+        "elapsed_s": 4.6806033340108115
       },
       {
         "filename": "VID-20251025-WA0005_clip_041.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.2498282919987105
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9848972797393799,
+        "median_risk_k0": 0.9842760562896729,
+        "excluded": false,
+        "elapsed_s": 5.765699584007962
       },
       {
         "filename": "VID-20251025-WA0005_clip_042.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 3.7578365829976974
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9535934805870057,
+        "median_risk_k0": 0.9474937915802002,
+        "excluded": false,
+        "elapsed_s": 5.498064707993763
       },
       {
         "filename": "VID-20251025-WA0005_clip_043.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.160882209005649
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.5001846611499786,
+        "median_risk_k0": 0.5099900364875793,
+        "excluded": false,
+        "elapsed_s": 5.675104249996366
       },
       {
         "filename": "VID-20251025-WA0005_clip_044.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 3.9371245420043124
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9403828144073486,
+        "median_risk_k0": 0.9448162913322449,
+        "excluded": false,
+        "elapsed_s": 5.098606584011577
       },
       {
         "filename": "VID-20251025-WA0005_clip_045.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 3.892261540997424
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9395668387413025,
+        "median_risk_k0": 0.9395698308944702,
+        "excluded": false,
+        "elapsed_s": 5.440557958005229
       },
       {
         "filename": "VID-20251025-WA0005_clip_046.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 3.9271144999947865
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.920965850353241,
+        "median_risk_k0": 0.9239546060562134,
+        "excluded": false,
+        "elapsed_s": 4.914452416996937
       },
       {
         "filename": "VID-20251025-WA0005_clip_047.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.460194375002175
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.8291047811508179,
+        "median_risk_k0": 0.8415091037750244,
+        "excluded": false,
+        "elapsed_s": 5.511263374995906
       },
       {
         "filename": "VID-20251025-WA0005_clip_048.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 3.997892832994694
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.9605053782463073,
+        "median_risk_k0": 0.9693809747695923,
+        "excluded": false,
+        "elapsed_s": 5.227431458013598
       },
       {
         "filename": "VID-20251025-WA0005_clip_049.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.311519708004198
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.8993481159210205,
+        "median_risk_k0": 0.904370903968811,
+        "excluded": false,
+        "elapsed_s": 5.52834958297899
       },
       {
         "filename": "VID-20251025-WA0005_clip_050.mp4",
         "n_frames_source": 125,
-        "excluded": true,
-        "exclude_reason": "below_145_frame_warmup_span",
-        "elapsed_s": 4.045260041995789
+        "n_pad_frames": 25,
+        "n_predictions": 5,
+        "mean_risk_k0": 0.8966205954551697,
+        "median_risk_k0": 0.9137829542160034,
+        "excluded": false,
+        "elapsed_s": 5.165891666983953
       }
     ]
-  },
-  "supplementary_analysis": {
-    "per_class_median_iqr": {
-      "No Panic": {
-        "n": 354,
-        "mean": 0.22140376520603386,
-        "median": 0.016233458649367094,
-        "p25": 0.0019434782152529806,
-        "p75": 0.3414966953120061,
-        "frac_above_0.5": 0.2175141242937853
-      },
-      "Normal": {
-        "n": 339,
-        "mean": 0.1089951910129093,
-        "median": 0.0023816179251298308,
-        "p25": 0.0008091402356512845,
-        "p75": 0.020553371682763097,
-        "frac_above_0.5": 0.09734513274336283
-      },
-      "Crowdy": {
-        "n": 143,
-        "mean": 0.16302616059289757,
-        "median": 0.0016538412910169706,
-        "p25": 0.0005274742026813329,
-        "p75": 0.0594195145003211,
-        "frac_above_0.5": 0.17482517482517482
-      },
-      "Panic": {
-        "n": 127,
-        "mean": 0.34815438661436526,
-        "median": 0.15227434635162354,
-        "p25": 0.0020779547630809247,
-        "p75": 0.713740062713623,
-        "frac_above_0.5": 0.3464566929133858
-      }
-    },
-    "note_on_mean_vs_median": "Distributions are heavy-tailed (most clips near-zero, some near 1.0), so median/IQR is less outlier-sensitive than the primary mean+/-std table above. Median ordering: Normal (0.002) approx Crowdy (0.002) < No Panic (0.016) << Panic (0.152) -- the non-panic classes do NOT order monotonically by apparent density (No Panic scores higher than both Normal and Crowdy), only the panic/non-panic split is clean.",
-    "panic_vs_pooled_nonpanic": {
-      "non_panic_pooled_n": 836,
-      "non_panic_pooled_mean": 0.16583617655633565,
-      "non_panic_pooled_median": 0.004653354291804135,
-      "panic_n": 127,
-      "panic_mean": 0.34815438661436526,
-      "panic_median": 0.15227434635162354,
-      "mann_whitney_u": 68665.0,
-      "p_value_one_sided_panic_greater": 4.797198202155061e-08,
-      "test_description": "Mann-Whitney U, one-sided (panic > pooled non-panic), on per-clip mean k=0 risk scores. This is the cleanest positive result in this transfer test: the coarse panic/non-panic split is statistically significant and large, even though the finer 4-way class ordering (see note_on_mean_vs_median) is not monotonic."
-    }
   }
 }

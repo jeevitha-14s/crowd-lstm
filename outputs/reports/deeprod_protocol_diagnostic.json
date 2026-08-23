@@ -1,0 +1,153 @@
+{
+  "description": "Diagnostic reimplementation of DeepROD (Ammar & Cherif 2021) to test whether its near-perfect self-reported UMN numbers come from an easier evaluation protocol (per-video online self-calibration: train on that video's own first 300 frames, test on the rest of that SAME video) rather than a better model. See module docstring.",
+  "model_config": {
+    "train_frames": 300,
+    "d": 5,
+    "hidden_size": 32,
+    "num_layers": 2,
+    "epochs": 30,
+    "chi2_95_df1_threshold": 3.8415
+  },
+  "per_clip": [
+    {
+      "clip_id": 0,
+      "excluded": false,
+      "n_train_gom": 299,
+      "n_test": 325,
+      "n_test_positive": 90,
+      "accuracy": 0.7846153846153846,
+      "pf": 0.2153846153846154,
+      "precision": 0.5714285714285714,
+      "recall": 0.8888888888888888,
+      "auc": 0.8374940898345153
+    },
+    {
+      "clip_id": 1,
+      "excluded": false,
+      "n_train_gom": 299,
+      "n_test": 528,
+      "n_test_positive": 110,
+      "accuracy": 0.8465909090909091,
+      "pf": 0.1534090909090909,
+      "precision": 0.5857988165680473,
+      "recall": 0.9,
+      "auc": 0.8748368856024358
+    },
+    {
+      "clip_id": 2,
+      "excluded": false,
+      "n_train_gom": 299,
+      "n_test": 243,
+      "n_test_positive": 180,
+      "accuracy": 0.4732510288065844,
+      "pf": 0.5267489711934157,
+      "precision": 0.6604938271604939,
+      "recall": 0.5944444444444444,
+      "auc": 0.27037037037037037
+    },
+    {
+      "clip_id": 3,
+      "excluded": false,
+      "n_train_gom": 299,
+      "n_test": 391,
+      "n_test_positive": 80,
+      "accuracy": 0.8260869565217391,
+      "pf": 0.17391304347826086,
+      "precision": 0.5441176470588235,
+      "recall": 0.925,
+      "auc": 0.9153536977491962
+    },
+    {
+      "clip_id": 4,
+      "excluded": false,
+      "n_train_gom": 299,
+      "n_test": 468,
+      "n_test_positive": 210,
+      "accuracy": 0.5512820512820513,
+      "pf": 0.44871794871794873,
+      "precision": 0.5,
+      "recall": 0.3380952380952381,
+      "auc": 0.49505352528608343
+    },
+    {
+      "clip_id": 5,
+      "excluded": false,
+      "n_train_gom": 299,
+      "n_test": 279,
+      "n_test_positive": 80,
+      "accuracy": 0.7670250896057348,
+      "pf": 0.23297491039426524,
+      "precision": 0.5641025641025641,
+      "recall": 0.825,
+      "auc": 0.8506281407035176
+    },
+    {
+      "clip_id": 6,
+      "excluded": false,
+      "n_train_gom": 299,
+      "n_test": 595,
+      "n_test_positive": 122,
+      "accuracy": 0.8033613445378152,
+      "pf": 0.19663865546218487,
+      "precision": 0.5167785234899329,
+      "recall": 0.6311475409836066,
+      "auc": 0.7674418604651163
+    },
+    {
+      "clip_id": 7,
+      "excluded": false,
+      "n_train_gom": 299,
+      "n_test": 367,
+      "n_test_positive": 174,
+      "accuracy": 0.670299727520436,
+      "pf": 0.329700272479564,
+      "precision": 0.6625766871165644,
+      "recall": 0.6206896551724138,
+      "auc": 0.6892680602703829
+    },
+    {
+      "clip_id": 8,
+      "excluded": false,
+      "n_train_gom": 299,
+      "n_test": 342,
+      "n_test_positive": 40,
+      "accuracy": 0.6929824561403509,
+      "pf": 0.30701754385964913,
+      "precision": 0.2695035460992908,
+      "recall": 0.95,
+      "auc": 0.8359271523178807
+    },
+    {
+      "clip_id": 9,
+      "excluded": false,
+      "n_train_gom": 299,
+      "n_test": 393,
+      "n_test_positive": 30,
+      "accuracy": 0.8422391857506362,
+      "pf": 0.15776081424936386,
+      "precision": 0.3181818181818182,
+      "recall": 0.9333333333333333,
+      "auc": 0.8518824609733702
+    },
+    {
+      "clip_id": 10,
+      "excluded": false,
+      "n_train_gom": 299,
+      "n_test": 508,
+      "n_test_positive": 20,
+      "accuracy": 0.6220472440944882,
+      "pf": 0.3779527559055118,
+      "precision": 0.08653846153846154,
+      "recall": 0.9,
+      "auc": 0.791905737704918
+    }
+  ],
+  "average_over_included_clips": {
+    "accuracy": 0.7163437616332845,
+    "pf": 0.28365623836671555,
+    "precision": 0.4799564057040516,
+    "recall": 0.7733271909925385,
+    "auc": 0.7436510892070717
+  },
+  "comparison_note": "This project's own LOCO-evaluated baseline LSTM on the identical UMN dataset scores AUROC 0.963/0.882/0.791/0.734 at k=0/30/60/90 (common-fold subset) -- a held-out-clip protocol, never seeing any frame of the test clip during training."
+}
