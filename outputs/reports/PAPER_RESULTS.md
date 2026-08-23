@@ -412,6 +412,80 @@ folds (5, 6) show the baseline scoring far below chance at k=0 (0.021,
 those specific held-out clips, a small-sample instability worth naming as a
 baseline limitation rather than hiding.
 
+### Table 8: Spatial zone-attention LSTM vs. baseline LSTM
+
+**Architecture** (`src/zone_attention_model.py`): identical shared-LSTM
+backbone (hidden=64, 1 layer, dropout=0.2) and per-horizon heads as the
+baseline, with a `ZoneAttention` module inserted before the LSTM — a single
+`Linear(4,1)` shared across all 16 spatial-grid zones and all timesteps
+scores each zone from its 4 features, softmax-normalizes across the 16
+zones, and reweights each zone's 4-dim block before flattening back to the
+64-dim LSTM input. 5 total added parameters, so any AUROC shift is
+attributable to the reweighting mechanism itself, not added capacity.
+Evaluated on the identical 11-fold LOCO splits and the same common-7-fold
+subset (clips 0,1,2,4,5,6,7) as the baseline. Source:
+`outputs/reports/umn_loco_results.json` (`zone_attention_lstm` key).
+
+| horizon | baseline LSTM (common-subset) | zone-attention LSTM (common-subset) | Δ AUROC |
+|---|---|---|---|
+| k=0  | 0.963 ± 0.039 | 0.935 ± 0.080 | −0.028 |
+| k=30 | 0.882 ± 0.163 | 0.928 ± 0.070 | +0.046 |
+| k=60 | 0.791 ± 0.268 | 0.819 ± 0.132 | +0.028 |
+| k=90 | 0.734 ± 0.240 | 0.613 ± 0.194 | −0.121 |
+
+**Caveat — do not read this delta as evidence about the attention
+mechanism.** A per-epoch diagnostic re-run of fold 0 shows why: in 9 of the
+11 LOCO folds, the zone-attention model's early-stopping checkpoint is
+`best_epoch=0` (validation AUROC peaked after the very first epoch and never
+recovered across 20 more epochs of patience), versus the baseline's
+`best_epoch` ranging 6–54 across all 11 folds and never 0. The diagnostic
+confirms this is ordinary overfitting, not attention collapse: training loss
+falls smoothly (271 → 15 over 40 epochs) while validation AUROC degrades
+monotonically (0.64 → ~0.13–0.20), and the attention weights stay
+near-uniform across zones throughout (≈0.04–0.13 vs. a uniform 1/16=0.0625),
+never collapsing onto a single zone. In this 11-clip low-data regime, adding
+the attention layer — despite only 5 extra parameters — measurably speeds up
+overfitting relative to the baseline, so most folds' reported AUROC reflects
+an undertrained, essentially epoch-0 checkpoint rather than a converged
+model. **Conclusion: no reliable evidence either way that spatial zone
+attention helps or hurts** — the mixed-sign deltas above are more readily
+explained by this training-dynamics artifact than by the mechanism itself.
+Re-running with a lower learning rate / stronger regularization for this
+variant specifically would be needed before drawing a real comparison.
+
+### Table 9: Rule-based vs. logistic regression vs. LSTM
+
+**Logistic regression control** (`src/baseline_logreg.py`): a *learned but
+non-recurrent* baseline — `StandardScaler` + `LogisticRegression`
+(`class_weight="balanced"`) trained on the same 30-timestep × 64-dim window
+the LSTM sees, flattened to 1920 dims, on the identical 11-fold LOCO splits
+and horizons. Same information access as the LSTM (full window, not just the
+current frame like the rule baseline), differing only in recurrence. Source:
+`outputs/reports/umn_loco_results.json` (`logistic_regression` key).
+
+| horizon | Rule-based (common-subset) | Logistic regression (common-subset) | LSTM (common-subset) |
+|---|---|---|---|
+| k=0  | 0.686 ± 0.386 | 0.924 ± 0.074 | 0.963 ± 0.039 |
+| k=30 | 0.571 ± 0.361 | 0.904 ± 0.101 | 0.882 ± 0.163 |
+| k=60 | 0.592 ± 0.253 | 0.830 ± 0.122 | 0.791 ± 0.268 |
+| k=90 | 0.583 ± 0.193 | 0.681 ± 0.172 | 0.734 ± 0.240 |
+
+**Learning matters far more than recurrence.** The jump from rule-based to
+logistic regression is large at every horizon (+0.10 to +0.35 AUROC) —
+confirming most of the LSTM's advantage over the rule baseline (Table in
+§7 above) comes from *learning*, not from the LSTM specifically. Recurrence's
+own contribution is much smaller and not monotonic: logistic regression
+essentially matches or slightly *beats* the LSTM at k=30 (+0.022) and k=60
+(+0.039), and is only clearly behind at k=0 (−0.039) and k=90 (−0.053) — the
+opposite of the "recurrence should matter more as horizon grows" hypothesis
+that motivated this control (see `baseline_logreg.py` docstring). Logistic
+regression is also consistently *more stable* across folds (lower std at
+k=30/60/90) than the LSTM. Taken together with the zone-attention result
+above, the mid-range horizons (k=30/60) look like where the LSTM's
+high-variance, low-data-regime instability costs it the most relative to
+simpler learned baselines — worth naming as a limitation rather than
+asserting recurrence is doing clear work at every horizon.
+
 ---
 
 ## 8. ShanghaiTech

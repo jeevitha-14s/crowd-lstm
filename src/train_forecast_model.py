@@ -100,6 +100,7 @@ def train_one_fold(
     X_test: np.ndarray,
     fold_clip: int,
     device: torch.device,
+    model_cls: type = CrowdRiskLSTM,
 ) -> Tuple[Dict[int, np.ndarray], List[int], int, int]:
     rng = np.random.default_rng(SEED + fold_clip)
     train_clips_unique = sorted(np.unique(train_clip_ids).tolist())
@@ -112,7 +113,7 @@ def train_one_fold(
     y_val = {k: y_train_all[k][val_mask] for k in HORIZONS}
 
     torch.manual_seed(SEED)
-    model = CrowdRiskLSTM().to(device)
+    model = model_cls().to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=LR, weight_decay=WEIGHT_DECAY)
     loss_fns = {
         k: nn.BCEWithLogitsLoss(pos_weight=torch.tensor(compute_pos_weight(y_inner[k]), device=device))

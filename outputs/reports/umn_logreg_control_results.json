@@ -1,0 +1,437 @@
+{
+  "description": "learned, non-recurrent control: logistic regression (StandardScaler + class_weight='balanced') on the flattened 30x64 window, identical information access to the LSTM, differing only in recurrence",
+  "folds": [
+    {
+      "fold_clip": 0,
+      "horizons": {
+        "0": {
+          "n_test": 390,
+          "n_pos": 10,
+          "excluded": false,
+          "auroc": 0.9886842105263157,
+          "auprc": 0.8082142857142857
+        },
+        "30": {
+          "n_test": 390,
+          "n_pos": 40,
+          "excluded": false,
+          "auroc": 0.9737857142857143,
+          "auprc": 0.8869881767979106
+        },
+        "60": {
+          "n_test": 390,
+          "n_pos": 70,
+          "excluded": false,
+          "auroc": 0.8316964285714286,
+          "auprc": 0.5737180666795315
+        },
+        "90": {
+          "n_test": 390,
+          "n_pos": 90,
+          "excluded": false,
+          "auroc": 0.5786296296296296,
+          "auprc": 0.237809850663828
+        }
+      }
+    },
+    {
+      "fold_clip": 1,
+      "horizons": {
+        "0": {
+          "n_test": 593,
+          "n_pos": 33,
+          "excluded": false,
+          "auroc": 0.7885281385281385,
+          "auprc": 0.39880277316056006
+        },
+        "30": {
+          "n_test": 593,
+          "n_pos": 63,
+          "excluded": false,
+          "auroc": 0.7490865528601377,
+          "auprc": 0.4378415955454872
+        },
+        "60": {
+          "n_test": 593,
+          "n_pos": 93,
+          "excluded": false,
+          "auroc": 0.6402580645161291,
+          "auprc": 0.1899154142436885
+        },
+        "90": {
+          "n_test": 593,
+          "n_pos": 110,
+          "excluded": false,
+          "auroc": 0.5309053265575004,
+          "auprc": 0.18219739316032196
+        }
+      }
+    },
+    {
+      "fold_clip": 2,
+      "horizons": {
+        "0": {
+          "n_test": 308,
+          "n_pos": 100,
+          "excluded": false,
+          "auroc": 0.9995192307692308,
+          "auprc": 0.9990427434751867
+        },
+        "30": {
+          "n_test": 308,
+          "n_pos": 130,
+          "excluded": false,
+          "auroc": 0.999438202247191,
+          "auprc": 0.9992506518822307
+        },
+        "60": {
+          "n_test": 308,
+          "n_pos": 160,
+          "excluded": false,
+          "auroc": 0.9214527027027027,
+          "auprc": 0.9295721127753831
+        },
+        "90": {
+          "n_test": 308,
+          "n_pos": 180,
+          "excluded": false,
+          "auroc": 0.6473524305555556,
+          "auprc": 0.6250921833625274
+        }
+      }
+    },
+    {
+      "fold_clip": 3,
+      "horizons": {
+        "0": {
+          "n_test": 456,
+          "n_pos": 0,
+          "excluded": true,
+          "auroc": NaN,
+          "auprc": NaN
+        },
+        "30": {
+          "n_test": 456,
+          "n_pos": 22,
+          "excluded": false,
+          "auroc": 0.9141181399245917,
+          "auprc": 0.24091188174671327
+        },
+        "60": {
+          "n_test": 456,
+          "n_pos": 52,
+          "excluded": false,
+          "auroc": 0.7053979436405179,
+          "auprc": 0.17891991894660597
+        },
+        "90": {
+          "n_test": 456,
+          "n_pos": 80,
+          "excluded": false,
+          "auroc": 0.8487367021276597,
+          "auprc": 0.45217691438993485
+        }
+      }
+    },
+    {
+      "fold_clip": 4,
+      "horizons": {
+        "0": {
+          "n_test": 533,
+          "n_pos": 146,
+          "excluded": false,
+          "auroc": 0.9835227071608085,
+          "auprc": 0.9569023208675012
+        },
+        "30": {
+          "n_test": 533,
+          "n_pos": 176,
+          "excluded": false,
+          "auroc": 0.7861917494270436,
+          "auprc": 0.7649172494069081
+        },
+        "60": {
+          "n_test": 533,
+          "n_pos": 206,
+          "excluded": false,
+          "auroc": 0.7186692794156944,
+          "auprc": 0.6470454643141581
+        },
+        "90": {
+          "n_test": 533,
+          "n_pos": 210,
+          "excluded": false,
+          "auroc": 0.5226448474126493,
+          "auprc": 0.46098148045342624
+        }
+      }
+    },
+    {
+      "fold_clip": 5,
+      "horizons": {
+        "0": {
+          "n_test": 344,
+          "n_pos": 6,
+          "excluded": false,
+          "auroc": 0.8609467455621302,
+          "auprc": 0.06741132252248194
+        },
+        "30": {
+          "n_test": 344,
+          "n_pos": 36,
+          "excluded": false,
+          "auroc": 0.9862914862914862,
+          "auprc": 0.9347647493567526
+        },
+        "60": {
+          "n_test": 344,
+          "n_pos": 66,
+          "excluded": false,
+          "auroc": 0.9497492914759101,
+          "auprc": 0.8024709217158551
+        },
+        "90": {
+          "n_test": 344,
+          "n_pos": 80,
+          "excluded": false,
+          "auroc": 0.9536931818181819,
+          "auprc": 0.7959525068077317
+        }
+      }
+    },
+    {
+      "fold_clip": 6,
+      "horizons": {
+        "0": {
+          "n_test": 660,
+          "n_pos": 32,
+          "excluded": false,
+          "auroc": 0.8844546178343949,
+          "auprc": 0.503532231089703
+        },
+        "30": {
+          "n_test": 660,
+          "n_pos": 62,
+          "excluded": false,
+          "auroc": 0.8349066781745604,
+          "auprc": 0.4334284167356184
+        },
+        "60": {
+          "n_test": 660,
+          "n_pos": 92,
+          "excluded": false,
+          "auroc": 0.7552816901408451,
+          "auprc": 0.453468822053891
+        },
+        "90": {
+          "n_test": 660,
+          "n_pos": 122,
+          "excluded": false,
+          "auroc": 0.597111341337071,
+          "auprc": 0.20701967603135224
+        }
+      }
+    },
+    {
+      "fold_clip": 7,
+      "horizons": {
+        "0": {
+          "n_test": 432,
+          "n_pos": 84,
+          "excluded": false,
+          "auroc": 0.9622331691297209,
+          "auprc": 0.7978630950449496
+        },
+        "30": {
+          "n_test": 432,
+          "n_pos": 114,
+          "excluded": false,
+          "auroc": 0.9960278053624628,
+          "auprc": 0.9888563623315632
+        },
+        "60": {
+          "n_test": 432,
+          "n_pos": 144,
+          "excluded": false,
+          "auroc": 0.9956356095679012,
+          "auprc": 0.9902906379035363
+        },
+        "90": {
+          "n_test": 432,
+          "n_pos": 174,
+          "excluded": false,
+          "auroc": 0.9396106210460662,
+          "auprc": 0.9278825149154537
+        }
+      }
+    },
+    {
+      "fold_clip": 8,
+      "horizons": {
+        "0": {
+          "n_test": 407,
+          "n_pos": 0,
+          "excluded": true,
+          "auroc": NaN,
+          "auprc": NaN
+        },
+        "30": {
+          "n_test": 407,
+          "n_pos": 0,
+          "excluded": true,
+          "auroc": NaN,
+          "auprc": NaN
+        },
+        "60": {
+          "n_test": 407,
+          "n_pos": 13,
+          "excluded": false,
+          "auroc": 0.6837172979304958,
+          "auprc": 0.04900435096889989
+        },
+        "90": {
+          "n_test": 407,
+          "n_pos": 40,
+          "excluded": false,
+          "auroc": 0.646117166212534,
+          "auprc": 0.12546735272653092
+        }
+      }
+    },
+    {
+      "fold_clip": 9,
+      "horizons": {
+        "0": {
+          "n_test": 458,
+          "n_pos": 0,
+          "excluded": true,
+          "auroc": NaN,
+          "auprc": NaN
+        },
+        "30": {
+          "n_test": 458,
+          "n_pos": 0,
+          "excluded": true,
+          "auroc": NaN,
+          "auprc": NaN
+        },
+        "60": {
+          "n_test": 458,
+          "n_pos": 18,
+          "excluded": false,
+          "auroc": 0.4496212121212121,
+          "auprc": 0.034522218464295415
+        },
+        "90": {
+          "n_test": 458,
+          "n_pos": 30,
+          "excluded": false,
+          "auroc": 0.12585669781931463,
+          "auprc": 0.03784287612223944
+        }
+      }
+    },
+    {
+      "fold_clip": 10,
+      "horizons": {
+        "0": {
+          "n_test": 573,
+          "n_pos": 0,
+          "excluded": true,
+          "auroc": NaN,
+          "auprc": NaN
+        },
+        "30": {
+          "n_test": 573,
+          "n_pos": 0,
+          "excluded": true,
+          "auroc": NaN,
+          "auprc": NaN
+        },
+        "60": {
+          "n_test": 573,
+          "n_pos": 9,
+          "excluded": false,
+          "auroc": 0.8152088258471237,
+          "auprc": 0.04278653436493556
+        },
+        "90": {
+          "n_test": 573,
+          "n_pos": 20,
+          "excluded": false,
+          "auroc": 0.5958408679927667,
+          "auprc": 0.04114106808134794
+        }
+      }
+    }
+  ],
+  "common_fold_subset": [
+    0,
+    1,
+    2,
+    4,
+    5,
+    6,
+    7
+  ],
+  "aggregate_full_set": {
+    "0": {
+      "auroc_mean": 0.9239841170729628,
+      "auroc_std": 0.07443511347615106,
+      "auprc_mean": 0.6473955388392383,
+      "auprc_std": 0.31323885571505067,
+      "n_folds": 7
+    },
+    "30": {
+      "auroc_mean": 0.9049807910716485,
+      "auroc_std": 0.09484528870590335,
+      "auprc_mean": 0.710869885475398,
+      "auprc_std": 0.2776883074722089,
+      "n_folds": 8
+    },
+    "60": {
+      "auroc_mean": 0.7696989405390874,
+      "auroc_std": 0.1495306556906899,
+      "auprc_mean": 0.44470131476643465,
+      "auprc_std": 0.3490696612725611,
+      "n_folds": 11
+    },
+    "90": {
+      "auroc_mean": 0.63513625568263,
+      "auroc_std": 0.21932649227897436,
+      "auprc_mean": 0.3721421651558812,
+      "auprc_std": 0.2908139152479253,
+      "n_folds": 11
+    }
+  },
+  "aggregate_common_subset": {
+    "0": {
+      "auroc_mean": 0.9239841170729628,
+      "auroc_std": 0.07443511347615106,
+      "auprc_mean": 0.6473955388392383,
+      "auprc_std": 0.31323885571505067,
+      "n_folds": 7
+    },
+    "30": {
+      "auroc_mean": 0.9036754555212279,
+      "auroc_std": 0.1013266372165459,
+      "auprc_mean": 0.7780067431509244,
+      "auprc_std": 0.22818361653213237,
+      "n_folds": 7
+    },
+    "60": {
+      "auroc_mean": 0.8303918666272301,
+      "auroc_std": 0.12196006665325199,
+      "auprc_mean": 0.6552116342408635,
+      "auprc_std": 0.25998503559211,
+      "n_folds": 7
+    },
+    "90": {
+      "auroc_mean": 0.6814210540509505,
+      "auroc_std": 0.17216840085911067,
+      "auprc_mean": 0.49099080077066304,
+      "auprc_std": 0.2784788563204139,
+      "n_folds": 7
+    }
+  }
+}
