@@ -26,6 +26,11 @@ import torch
 import torch.nn as nn
 from sklearn.metrics import average_precision_score, roc_auc_score
 
+# Defaults are UMN; both are overridable via CLI so the identical protocol can
+# be run on a second corpus (MED) without duplicating this file. Overriding
+# changes nothing about the procedure -- same splits, same early stopping, same
+# metrics -- which is the point: the two datasets must be measured the same way
+# to be comparable.
 DATASET_PATH = "data/forecast_dataset.npz"
 OUT_JSON_PATH = Path("outputs/reports/umn_loco_results.json")
 HORIZONS = [0, 30, 60, 90]
@@ -113,7 +118,7 @@ def train_one_fold(
     y_val = {k: y_train_all[k][val_mask] for k in HORIZONS}
 
     torch.manual_seed(SEED)
-    model = model_cls().to(device)
+    model = model_cls(input_size=X_train_all.shape[2]).to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=LR, weight_decay=WEIGHT_DECAY)
     loss_fns = {
         k: nn.BCEWithLogitsLoss(pos_weight=torch.tensor(compute_pos_weight(y_inner[k]), device=device))
@@ -169,8 +174,18 @@ def train_one_fold(
 
 
 def main() -> None:
+    import argparse
+
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--dataset", default=DATASET_PATH,
+                        help="forecast .npz (default: UMN)")
+    parser.add_argument("--out", type=Path, default=OUT_JSON_PATH,
+                        help="results JSON (default: UMN)")
+    args = parser.parse_args()
+    dataset_path, out_json_path = args.dataset, args.out
+
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    data = np.load(DATASET_PATH)
+    data = np.load(dataset_path)
     X = data["X"]
     clip_ids = data["clip_ids"]
     y = {k: data[f"y_{k}"] for k in HORIZONS}
@@ -300,10 +315,10 @@ def main() -> None:
         "aggregate_full_set_excluded_folds": excluded_by_horizon,
         "aggregate_common_subset": aggregate_common,
     }
-    OUT_JSON_PATH.parent.mkdir(parents=True, exist_ok=True)
-    with open(OUT_JSON_PATH, "w") as f:
+    out_json_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(out_json_path, "w") as f:
         json.dump(payload, f, indent=2)
-    print(f"\nSaved {OUT_JSON_PATH}")
+    print(f"\nSaved {out_json_path}")
 
 
 if __name__ == "__main__":

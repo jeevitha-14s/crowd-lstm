@@ -48,6 +48,25 @@ STAGE_WINDOW = 100
 SEQ_LEN = 30
 STRIDE = 5  # matches UMN training (build_forecast_dataset.py): 29*5=145 frames history
 
+# Live-source reconnection. Backoff is capped rather than unbounded so a camera
+# that comes back after a long outage is picked up within a known worst-case
+# delay instead of after an ever-growing sleep.
+LIVE_SOURCE_PREFIXES = ("rtsp://", "rtsps://", "http://", "https://", "udp://", "tcp://")
+RECONNECT_BACKOFF_START_S = 1.0
+RECONNECT_BACKOFF_MAX_S = 30.0
+MAX_RECONNECT_ATTEMPTS = 0  # 0 = retry indefinitely, which is the point for 24/7 monitoring
+
+
+def is_live_source(source: str) -> bool:
+    """True for network streams and integer camera indices, False for files.
+
+    Drives whether a failed read is treated as a transient fault to retry or
+    as a legitimate end-of-stream. A bare integer is OpenCV's local-camera
+    index form ("0"), which is live despite not looking like a URL.
+    """
+    s = str(source)
+    return s.isdigit() or s.lower().startswith(LIVE_SOURCE_PREFIXES)
+
 # On-frame callback signature: (frame_id, frame, detections, probs_or_None, timings_ms) -> None
 FrameCallback = Callable[
     [int, np.ndarray, List[Dict[str, Any]], Optional[Dict[int, float]], Dict[str, float]], None
@@ -181,6 +200,8 @@ class StreamProcessor:
         realtime: bool = False,
         fps_override: Optional[float] = None,
         on_frame: Optional[FrameCallback] = None,
+        reconnect: Optional[bool] = None,
+        max_reconnect_attempts: int = MAX_RECONNECT_ATTEMPTS,
     ) -> None:
         self.source = source
         self.device = device or torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -188,6 +209,14 @@ class StreamProcessor:
         self.conf = conf
         self.realtime = realtime
         self.on_frame = on_frame
+        # Default by source kind rather than a blanket flag: a failed read from
+        # a FILE means end-of-file, which is a legitimate terminal state and
+        # must not be retried, while the same failure on a live stream is
+        # almost always a transient network event that a continuous-monitoring
+        # deployment has to survive. Explicit True/False overrides the guess.
+        self.reconnect = is_live_source(source) if reconnect is None else reconnect
+        self.max_reconnect_attempts = max_reconnect_attempts
+        self.reconnect_events: List[Dict[str, Any]] = []
 
         self.cap = cv2.VideoCapture(source)
         if not self.cap.isOpened():
@@ -206,10 +235,14 @@ class StreamProcessor:
         self.feature_extractor = FeatureExtractor(frame_width, frame_height, grid_rows, grid_cols)
         self.sequence_buffer = SequenceBuffer(seq_len, stride, input_size)
         self.timer = RollingStageTimer(STAGES)
+        self.last_features: Optional[np.ndarray] = None
 
         self._slot = FrameSlot()
         self._stop_event = threading.Event()
         self._stream_ended = threading.Event()
+        # Set by the reader thread after a reconnect, cleared by the consumer
+        # once it has reset the scene-dependent state it owns.
+        self._needs_reset = threading.Event()
         self._reader_thread: Optional[threading.Thread] = None
         self._reader_frame_counter = 0
         self.frames_processed = 0
@@ -240,10 +273,60 @@ class StreamProcessor:
             ok, frame = self.cap.read()
             decode_ms = (time.perf_counter() - t0) * 1000
             if not ok:
-                self._stream_ended.set()
-                return
+                if not self.reconnect or not self._attempt_reconnect():
+                    self._stream_ended.set()
+                    return
+                # Reconnected: the gap in coverage means track IDs, the
+                # feature extractor's running normalizers and the partially
+                # filled sequence buffer all refer to a scene that is no
+                # longer continuous with what arrives next. Re-pace and let
+                # the consumer rebuild from scratch.
+                next_due = time.perf_counter()
+                continue
             self._reader_frame_counter += 1
             self._slot.put(frame, self._reader_frame_counter, decode_ms)
+
+    def _attempt_reconnect(self) -> bool:
+        """Reopen a dropped live source, with capped exponential backoff.
+
+        Returns True once a frame is readable again, False if the caller
+        should give up (stop requested, or max attempts exhausted).
+
+        Signals `_needs_reset` rather than resetting state here: the feature
+        extractor and sequence buffer are owned by the consumer thread, and
+        mutating them from the reader thread would race an in-flight frame.
+        """
+        backoff = RECONNECT_BACKOFF_START_S
+        attempt = 0
+        while not self._stop_event.is_set():
+            attempt += 1
+            if self.max_reconnect_attempts and attempt > self.max_reconnect_attempts:
+                print(f"[stream] giving up after {attempt - 1} reconnect attempts", flush=True)
+                return False
+            print(
+                f"[stream] source dropped; reconnect attempt {attempt} in {backoff:.1f}s",
+                flush=True,
+            )
+            # Interruptible sleep: a Ctrl-C during a 30s backoff should not
+            # have to wait out the full interval before the thread notices.
+            if self._stop_event.wait(timeout=backoff):
+                return False
+            try:
+                self.cap.release()
+            except Exception:
+                pass
+            self.cap = cv2.VideoCapture(self.source)
+            if self.cap.isOpened():
+                ok, _ = self.cap.read()  # opened != actually delivering frames
+                if ok:
+                    self.reconnect_events.append(
+                        {"attempts": attempt, "at": time.time(), "frame_id": self._reader_frame_counter}
+                    )
+                    self._needs_reset.set()
+                    print(f"[stream] reconnected after {attempt} attempt(s)", flush=True)
+                    return True
+            backoff = min(backoff * 2, RECONNECT_BACKOFF_MAX_S)
+        return False
 
     def _detect_and_track(self, frame: np.ndarray) -> Tuple[List[Dict[str, Any]], float, float]:
         """Returns (detections, detect_ms, track_ms). Detect/track are split
@@ -296,6 +379,9 @@ class StreamProcessor:
         t0 = time.perf_counter()
         features = self.feature_extractor.extract(detections)
         features_ms = (time.perf_counter() - t0) * 1000
+        # Exposed for on_frame consumers (e.g. ops_console's zone overlay) so
+        # they show the exact vector the LSTM saw rather than recomputing it.
+        self.last_features = features
 
         self.sequence_buffer.push(frame_id, features)
         probs: Optional[Dict[int, float]] = None
@@ -332,10 +418,7 @@ class StreamProcessor:
         its full (seq_len-1)*stride video-frame span to elapse before its
         first prediction), subject to max_frames as a safety cap if both are
         given."""
-        self.feature_extractor.reset()
-        self.sequence_buffer.reset()
-        if hasattr(self.yolo.predictor, "trackers"):
-            self.yolo.predictor.trackers[0].reset()
+        self._reset_scene_state()
 
         self._run_start_time = time.perf_counter()
         self._reader_thread = threading.Thread(target=self._reader_loop, daemon=True)
@@ -347,6 +430,15 @@ class StreamProcessor:
                 if self._stream_ended.is_set():
                     break
                 continue
+            if self._needs_reset.is_set():
+                # A reconnect happened. Track IDs restart, the running
+                # normalizers were calibrated on the pre-outage segment, and
+                # the sequence buffer holds frames separated from this one by
+                # an unknown gap -- carrying any of it forward would feed the
+                # LSTM a window that never existed. Rebuild from scratch, at
+                # the cost of one warmup period before predictions resume.
+                self._reset_scene_state()
+                self._needs_reset.clear()
             frame, frame_id, decode_ms = item
             self._process_frame(frame, frame_id, decode_ms)
             if min_predictions is not None and self.lstm_predictions_made >= min_predictions:
@@ -356,6 +448,19 @@ class StreamProcessor:
         self._run_end_time = time.perf_counter()
 
         self.stop()
+
+    def _reset_scene_state(self) -> None:
+        """Clear every piece of state that assumes scene continuity.
+
+        Called at start-up and after each reconnect. Kept in one place so the
+        two paths cannot drift -- a reconnect that reset the tracker but not
+        the feature extractor's running normalizers would silently score the
+        new segment against the old segment's scale.
+        """
+        self.feature_extractor.reset()
+        self.sequence_buffer.reset()
+        if getattr(self.yolo, "predictor", None) is not None and hasattr(self.yolo.predictor, "trackers"):
+            self.yolo.predictor.trackers[0].reset()
 
     def request_stop(self) -> None:
         """Safe to call from within on_frame (e.g. a 'quit' keypress) --
@@ -437,6 +542,20 @@ def main() -> None:
         "--realtime", action="store_true", help="pace the reader to the source's native fps"
     )
     parser.add_argument("--fps", type=float, default=None, help="override native fps (e.g. for RTSP)")
+    parser.add_argument(
+        "--reconnect",
+        dest="reconnect",
+        action="store_true",
+        default=None,
+        help="retry on read failure (default: on for rtsp/http/camera-index sources, off for files)",
+    )
+    parser.add_argument("--no-reconnect", dest="reconnect", action="store_false")
+    parser.add_argument(
+        "--max-reconnect-attempts",
+        type=int,
+        default=MAX_RECONNECT_ATTEMPTS,
+        help="0 = retry indefinitely",
+    )
     args = parser.parse_args()
 
     device = torch.device(args.device) if args.device else None
@@ -447,6 +566,8 @@ def main() -> None:
         device=device,
         realtime=args.realtime,
         fps_override=args.fps,
+        reconnect=args.reconnect,
+        max_reconnect_attempts=args.max_reconnect_attempts,
     )
     print(f"Opened {args.source}  device={processor.device}  realtime={args.realtime}")
     processor.run(max_frames=args.max_frames, min_predictions=args.min_predictions)

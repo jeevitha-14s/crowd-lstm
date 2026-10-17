@@ -1,0 +1,141 @@
+{
+  "shanghaitech_density_vs_performance": {
+    "per_scene": [
+      {
+        "scene": 6,
+        "group": "thin",
+        "mean_persons_per_frame": 1.7021140294682895,
+        "auroc_k0": 0.794854441429503,
+        "auroc_mean_over_horizons": 0.7410947046434762
+      },
+      {
+        "scene": 3,
+        "group": "headline",
+        "mean_persons_per_frame": 1.8571428571428572,
+        "auroc_k0": 0.7397567551323551,
+        "auroc_mean_over_horizons": 0.7303161220381647
+      },
+      {
+        "scene": 7,
+        "group": "headline",
+        "mean_persons_per_frame": 3.3769470404984423,
+        "auroc_k0": 0.6069889466758043,
+        "auroc_mean_over_horizons": 0.5773667301090251
+      },
+      {
+        "scene": 1,
+        "group": "headline",
+        "mean_persons_per_frame": 3.5529298940172622,
+        "auroc_k0": 0.6200403471033988,
+        "auroc_mean_over_horizons": 0.6089395802958223
+      },
+      {
+        "scene": 12,
+        "group": "thin",
+        "mean_persons_per_frame": 3.6193687961313312,
+        "auroc_k0": 0.44015925890944396,
+        "auroc_mean_over_horizons": 0.4041790369464391
+      },
+      {
+        "scene": 4,
+        "group": "thin",
+        "mean_persons_per_frame": 4.310463121783877,
+        "auroc_k0": 0.5770487779086981,
+        "auroc_mean_over_horizons": 0.5969244352331795
+      },
+      {
+        "scene": 5,
+        "group": "headline",
+        "mean_persons_per_frame": 4.789354803453678,
+        "auroc_k0": 0.24810322054010792,
+        "auroc_mean_over_horizons": 0.2707798459398878
+      },
+      {
+        "scene": 8,
+        "group": "thin",
+        "mean_persons_per_frame": 5.1335395608225864,
+        "auroc_k0": 0.779080154922985,
+        "auroc_mean_over_horizons": 0.7241885804484911
+      }
+    ],
+    "pearson_r": -0.4808355275236129,
+    "pearson_p": 0.227757937777051,
+    "spearman_rho": -0.523809523809524,
+    "spearman_p": 0.18272075053971484,
+    "n_scenes": 8,
+    "verdict": "density does NOT explain the per-scene ordering -- consistent with H2 (mismatch in the KIND of anomaly), not H1 (sparsity alone)"
+  },
+  "umn_density": {
+    "overall_mean_persons_per_frame": 15.16707584959297,
+    "per_clip_min": 11.697974217311234,
+    "per_clip_max": 17.392496392496394
+  },
+  "horizon_decay_with_significance": {
+    "0": {
+      "mean_auroc": 0.9629613773006357,
+      "ci95": [
+        0.9316607354768209,
+        0.9881270565562115
+      ],
+      "ci_excludes_chance": true,
+      "sign_test_p": 0.0078125,
+      "sign_test_significant_at_0.05": true
+    },
+    "30": {
+      "mean_auroc": 0.8820277669282799,
+      "ci95": [
+        0.7464555250524053,
+        0.9777526153554866
+      ],
+      "ci_excludes_chance": true,
+      "sign_test_p": 0.0078125,
+      "sign_test_significant_at_0.05": true
+    },
+    "60": {
+      "mean_auroc": 0.7912648065566897,
+      "ci95": [
+        0.5728323146473152,
+        0.9503195131358418
+      ],
+      "ci_excludes_chance": true,
+      "sign_test_p": 0.0625,
+      "sign_test_significant_at_0.05": false
+    },
+    "90": {
+      "mean_auroc": 0.7337472880112832,
+      "ci95": [
+        0.5450954369851366,
+        0.8912301671443137
+      ],
+      "ci_excludes_chance": true,
+      "sign_test_p": 0.0625,
+      "sign_test_significant_at_0.05": false
+    }
+  },
+  "external_transfer_artifact": {
+    "available": true,
+    "keys": [
+      "description",
+      "source_dataset",
+      "model_config",
+      "aggregate_by_class",
+      "supplementary_analysis",
+      "per_clip"
+    ]
+  },
+  "stated_operating_envelope": {
+    "suited_to": [
+      "Collective, crowd-scale events where a large fraction of visible people change motion together (UMN-style escape/panic).",
+      "Dense scenes: validated at ~15 persons/frame; every zone-level feature is defined only when a zone is occupied.",
+      "Lead times up to k=30 frames (1s at 30fps) by the stricter sign test; point estimates stay above chance further out but are not individually significant.",
+      "Fixed-camera continuous feeds -- the running normalizers assume a stable viewpoint and are reset at every scene boundary."
+    ],
+    "not_suited_to": [
+      "Individual or small-group anomalies (a lone cyclist, a 2-5 person altercation). ShanghaiTech scene 05 scores BELOW chance at every horizon -- these events do not move a crowd-level aggregate, and can push it the wrong way.",
+      "Sparse scenes (~4 persons/frame): most spatial zones are empty, leaving direction_entropy and stop_ratio undefined ~62%/67% of the time within occupied zones.",
+      "Moving or newly-installed cameras: the per-clip running normalizers need time to stabilise after every reset.",
+      "Any deployment needing a calibrated probability rather than a ranking -- all reported metrics are threshold-free (AUROC/AUPRC)."
+    ],
+    "evidence_notes": "density does NOT explain the per-scene ordering -- consistent with H2 (mismatch in the KIND of anomaly), not H1 (sparsity alone)"
+  }
+}

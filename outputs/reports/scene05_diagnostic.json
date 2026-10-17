@@ -1,0 +1,59 @@
+{
+  "description": "Per-video diagnostic for ShanghaiTech scene 05, which scores below chance at every horizon. Tests whether the features respond to the anomaly at all, using a trivial z-scored feature average with no model. They do, in two of three videos; the third is inverted and holds the majority of the scene's positive frames.",
+  "scene": "05",
+  "per_video": {
+    "05_0017": {
+      "n_frames": 433,
+      "anomaly_start": 283,
+      "anomaly_end": 415,
+      "n_anomalous": 132,
+      "share_of_scene_positives": 0.18565400843881857,
+      "share_of_own_duration": 0.30484988452655887,
+      "feature_delta_during_anomaly": {
+        "normalized_count": 0.05870214104652405,
+        "flow_magnitude": 0.03687508404254913,
+        "direction_entropy": 0.055105265229940414,
+        "stop_ratio": 0.028356138616800308
+      },
+      "naive_auroc": 0.8785613611195007
+    },
+    "05_0019": {
+      "n_frames": 649,
+      "anomaly_start": 244,
+      "anomaly_end": 403,
+      "n_anomalous": 159,
+      "share_of_scene_positives": 0.22362869198312235,
+      "share_of_own_duration": 0.24499229583975346,
+      "feature_delta_during_anomaly": {
+        "normalized_count": 0.029447436332702637,
+        "flow_magnitude": 0.013102151453495026,
+        "direction_entropy": 0.07980182766914368,
+        "stop_ratio": 0.046822190284729004
+      },
+      "naive_auroc": 0.8275189321011424
+    },
+    "05_0023": {
+      "n_frames": 769,
+      "anomaly_start": 171,
+      "anomaly_end": 591,
+      "n_anomalous": 420,
+      "share_of_scene_positives": 0.5907172995780591,
+      "share_of_own_duration": 0.5461638491547465,
+      "feature_delta_during_anomaly": {
+        "normalized_count": -0.03787758946418762,
+        "flow_magnitude": -0.009738214313983917,
+        "direction_entropy": -0.02124236524105072,
+        "stop_ratio": -0.0024697817862033844
+      },
+      "naive_auroc": 0.389862191294856
+    }
+  },
+  "pooled_naive_auroc": 0.6311064228785748,
+  "reported_model_auroc": {
+    "0": 0.24810322054010792,
+    "24": 0.2616584539785084,
+    "48": 0.2736195930734278,
+    "72": 0.29973811616750706
+  },
+  "proxy_caveat": "The naive score z-scores within each video, while the model sees features normalised by running statistics applied during extraction. It indicates what the features contain; it is not a substitute for the model."
+}

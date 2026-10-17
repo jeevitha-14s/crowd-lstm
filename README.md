@@ -51,6 +51,32 @@ anything -- it must never be used to report a metric.
   docstring for the measurement methodology (sequential, unthrottled,
   fixed imgsz=640 across resolutions).
 
+### Multi-camera operator console
+
+    python3 -m src.ops_console --device mps                # default: the UMN video, looped
+    python3 -m src.ops_console --camera "Gate A=rtsp://localhost:8554/umn" --camera clip.mp4
+    python3 -m src.ops_console --simulate                  # no models; scripted risk for UI work
+
+Open http://127.0.0.1:8050. `src/ops_console.py` runs one StreamProcessor and
+one AlertManager per camera and streams everything to the browser over a
+single SSE connection (`src/ops_console_ui/`). How the console behaves:
+
+- **Grid of feeds.** Each tile shows its camera's tier as a coloured border and
+  corner badge only (no colour wash over the video). The tier is the
+  persisted AlertManager level, not a separately computed one.
+- **Auto-focus.** The highest-tier camera is enlarged as soon as it reaches
+  AMBER. Another camera takes over only if it is in a strictly higher tier.
+  Click a tile or press 1-9 to pin a camera; Esc returns to the grid. A new
+  RED on another camera still overrides a pin.
+- **Focused feed.** Only the focused feed shows tracked boxes and per-zone
+  motion shading (the exact feature vector the LSTM saw), plus a
+  now/+1s/+2s/+3s risk ribbon with a one-line headline.
+- **Alert log.** A muted sidebar lists every tier change. Per-camera CSVs
+  are written to `outputs/reports/ops_console/`.
+
+`--simulate` output is synthetic, is labelled SIMULATED in the UI, and its
+alert CSVs go to a temp dir. Never report a metric from it.
+
 ### Quick test on a video file
 
     python3 -m src.stream_processor data/raw/umn/Crowd-Activity-All.avi --realtime --min-predictions 500

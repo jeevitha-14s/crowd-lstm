@@ -1,4 +1,5 @@
 {
+  "SUPERSEDED": "SUPERSEDED -- do not use these numbers. Produced before (a) the input-standardization fix (raw GoM sums saturate the LSTM gates; the model here was performing worse than a mean-predicting constant) and (b) DeepROD's published hyperparameter grid search. Replaced by outputs/reports/deeprod_gridsearch_loco.json and outputs/reports/deeprod_gridsearch_pervideo.json.",
   "description": "Diagnostic reimplementation of DeepROD (Ammar & Cherif 2021) to test whether its near-perfect self-reported UMN numbers come from an easier evaluation protocol (per-video online self-calibration: train on that video's own first 300 frames, test on the rest of that SAME video) rather than a better model. See module docstring.",
   "model_config": {
     "train_frames": 300,

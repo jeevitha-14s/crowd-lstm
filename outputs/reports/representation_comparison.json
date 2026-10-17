@@ -1,0 +1,417 @@
+{
+  "description": "Tracked vs optical-flow vs concatenated input representations under an otherwise identical pipeline: same 4x4 grid, same LSTM, same leave-one-clip-out folds, same horizons, same labels. Isolates the representation as the only independent variable.",
+  "runs": {
+    "tracked": "outputs/reports/umn_loco_results.json",
+    "flow": "outputs/reports/umn_flow_loco_results.json",
+    "combined": "outputs/reports/umn_combined_loco_results.json"
+  },
+  "reference": "tracked",
+  "per_horizon": {
+    "0": {
+      "n_folds": 7,
+      "folds": [
+        0,
+        1,
+        2,
+        4,
+        5,
+        6,
+        7
+      ],
+      "mean_auroc": {
+        "tracked": 0.9629613773006357,
+        "flow": 0.8208667037834888,
+        "combined": 0.9748999130328866
+      },
+      "vs_reference": {
+        "flow": {
+          "mean_difference": -0.14209467351714689,
+          "median_difference": -0.008894230769230793,
+          "n_folds_favouring_reference": 4,
+          "wilcoxon_p": 0.578125
+        },
+        "combined": {
+          "mean_difference": 0.011938535732250963,
+          "median_difference": 0.007731253420908635,
+          "n_folds_favouring_reference": 1,
+          "wilcoxon_p": 0.21875
+        }
+      }
+    },
+    "30": {
+      "n_folds": 8,
+      "folds": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "mean_auroc": {
+        "tracked": 0.8627095704652612,
+        "flow": 0.8376631265791021,
+        "combined": 0.845038038176265
+      },
+      "vs_reference": {
+        "flow": {
+          "mean_difference": -0.025046443886159037,
+          "median_difference": -0.019731399998253907,
+          "n_folds_favouring_reference": 5,
+          "wilcoxon_p": 0.640625
+        },
+        "combined": {
+          "mean_difference": -0.01767153228899617,
+          "median_difference": -0.009658185665181729,
+          "n_folds_favouring_reference": 5,
+          "wilcoxon_p": 0.4609375
+        }
+      }
+    },
+    "60": {
+      "n_folds": 11,
+      "folds": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "mean_auroc": {
+        "tracked": 0.70534917879149,
+        "flow": 0.7591927818916258,
+        "combined": 0.6869929290880604
+      },
+      "vs_reference": {
+        "flow": {
+          "mean_difference": 0.05384360310013589,
+          "median_difference": -0.05071187997550519,
+          "n_folds_favouring_reference": 6,
+          "wilcoxon_p": 0.8310546875
+        },
+        "combined": {
+          "mean_difference": -0.01835624970342939,
+          "median_difference": -0.03776785714285716,
+          "n_folds_favouring_reference": 8,
+          "wilcoxon_p": 0.4130859375
+        }
+      }
+    },
+    "90": {
+      "n_folds": 11,
+      "folds": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "mean_auroc": {
+        "tracked": 0.7081429949265474,
+        "flow": 0.7317423046845861,
+        "combined": 0.6464448782146123
+      },
+      "vs_reference": {
+        "flow": {
+          "mean_difference": 0.02359930975803852,
+          "median_difference": -0.07322017285930682,
+          "n_folds_favouring_reference": 6,
+          "wilcoxon_p": 0.5771484375
+        },
+        "combined": {
+          "mean_difference": -0.06169811671193528,
+          "median_difference": -0.0361742424242425,
+          "n_folds_favouring_reference": 6,
+          "wilcoxon_p": 0.5771484375
+        }
+      }
+    }
+  },
+  "below_chance": {
+    "0": {
+      "tracked": {
+        "count": 0,
+        "of": 7,
+        "clips": []
+      },
+      "flow": {
+        "count": 2,
+        "of": 7,
+        "clips": [
+          4,
+          7
+        ]
+      },
+      "combined": {
+        "count": 0,
+        "of": 7,
+        "clips": []
+      }
+    },
+    "30": {
+      "tracked": {
+        "count": 0,
+        "of": 8,
+        "clips": []
+      },
+      "flow": {
+        "count": 1,
+        "of": 8,
+        "clips": [
+          4
+        ]
+      },
+      "combined": {
+        "count": 1,
+        "of": 8,
+        "clips": [
+          0
+        ]
+      }
+    },
+    "60": {
+      "tracked": {
+        "count": 2,
+        "of": 11,
+        "clips": [
+          0,
+          8
+        ]
+      },
+      "flow": {
+        "count": 1,
+        "of": 11,
+        "clips": [
+          9
+        ]
+      },
+      "combined": {
+        "count": 2,
+        "of": 11,
+        "clips": [
+          0,
+          8
+        ]
+      }
+    },
+    "90": {
+      "tracked": {
+        "count": 1,
+        "of": 11,
+        "clips": [
+          0
+        ]
+      },
+      "flow": {
+        "count": 1,
+        "of": 11,
+        "clips": [
+          9
+        ]
+      },
+      "combined": {
+        "count": 3,
+        "of": 11,
+        "clips": [
+          0,
+          8,
+          10
+        ]
+      }
+    }
+  },
+  "feature_direction_during_anomaly": {
+    "tracked": {
+      "per_clip": {
+        "0": {
+          "normalized_count": -0.12446261942386627,
+          "flow_magnitude": -0.03772358596324921,
+          "direction_entropy": -0.05553864687681198,
+          "stop_ratio": -0.08277842402458191
+        },
+        "1": {
+          "normalized_count": -0.12193328142166138,
+          "flow_magnitude": -0.019765224307775497,
+          "direction_entropy": -0.06500761210918427,
+          "stop_ratio": -0.07411647588014603
+        },
+        "2": {
+          "normalized_count": -0.11112306267023087,
+          "flow_magnitude": -0.05320924520492554,
+          "direction_entropy": -0.01416420191526413,
+          "stop_ratio": -0.08702149987220764
+        },
+        "3": {
+          "normalized_count": -0.08063564449548721,
+          "flow_magnitude": -0.019851166754961014,
+          "direction_entropy": -0.00478009507060051,
+          "stop_ratio": -0.07535216957330704
+        },
+        "4": {
+          "normalized_count": -0.10014081746339798,
+          "flow_magnitude": -0.034466080367565155,
+          "direction_entropy": -0.032402969896793365,
+          "stop_ratio": -0.05309539660811424
+        },
+        "5": {
+          "normalized_count": -0.07220516353845596,
+          "flow_magnitude": 0.028240177780389786,
+          "direction_entropy": -0.01018277183175087,
+          "stop_ratio": -0.0987386479973793
+        },
+        "6": {
+          "normalized_count": -0.08276453614234924,
+          "flow_magnitude": 0.010016586631536484,
+          "direction_entropy": -0.02429758384823799,
+          "stop_ratio": -0.09506186842918396
+        },
+        "7": {
+          "normalized_count": -0.14799916744232178,
+          "flow_magnitude": -0.06268887221813202,
+          "direction_entropy": -0.012943543493747711,
+          "stop_ratio": -0.12385302782058716
+        },
+        "8": {
+          "normalized_count": -0.13891032338142395,
+          "flow_magnitude": -0.0422171950340271,
+          "direction_entropy": -0.07691706717014313,
+          "stop_ratio": -0.08209019899368286
+        },
+        "9": {
+          "normalized_count": -0.1420518308877945,
+          "flow_magnitude": -0.0401916466653347,
+          "direction_entropy": -0.08249951153993607,
+          "stop_ratio": -0.10004737228155136
+        },
+        "10": {
+          "normalized_count": -0.11894336342811584,
+          "flow_magnitude": -0.042389627546072006,
+          "direction_entropy": -0.06108110770583153,
+          "stop_ratio": -0.06993433088064194
+        }
+      },
+      "sign_counts": {
+        "normalized_count": {
+          "n_negative": 11,
+          "n_positive": 0
+        },
+        "flow_magnitude": {
+          "n_negative": 9,
+          "n_positive": 2
+        },
+        "direction_entropy": {
+          "n_negative": 11,
+          "n_positive": 0
+        },
+        "stop_ratio": {
+          "n_negative": 11,
+          "n_positive": 0
+        }
+      },
+      "n_clips": 11
+    },
+    "flow": {
+      "per_clip": {
+        "0": {
+          "normalized_count": -0.11538970470428467,
+          "flow_magnitude": -0.12304562330245972,
+          "direction_entropy": -0.14587098360061646,
+          "stop_ratio": -0.007009744644165039
+        },
+        "1": {
+          "normalized_count": -0.12027570605278015,
+          "flow_magnitude": -0.22499185800552368,
+          "direction_entropy": -0.09508472681045532,
+          "stop_ratio": -0.05494356155395508
+        },
+        "2": {
+          "normalized_count": -0.058521151542663574,
+          "flow_magnitude": -0.1427663117647171,
+          "direction_entropy": -0.04646182060241699,
+          "stop_ratio": -0.06147468090057373
+        },
+        "3": {
+          "normalized_count": -0.04724586009979248,
+          "flow_magnitude": 0.0048660701140761375,
+          "direction_entropy": -0.06633573770523071,
+          "stop_ratio": 0.13885819911956787
+        },
+        "4": {
+          "normalized_count": 0.050340890884399414,
+          "flow_magnitude": -0.12519460916519165,
+          "direction_entropy": 0.000906527042388916,
+          "stop_ratio": -0.04115408658981323
+        },
+        "5": {
+          "normalized_count": -0.07114285230636597,
+          "flow_magnitude": -0.04642243683338165,
+          "direction_entropy": -0.07475858926773071,
+          "stop_ratio": 0.06528276205062866
+        },
+        "6": {
+          "normalized_count": 0.03618556261062622,
+          "flow_magnitude": -0.08333946019411087,
+          "direction_entropy": -0.020524919033050537,
+          "stop_ratio": 0.044113487005233765
+        },
+        "7": {
+          "normalized_count": 0.03706878423690796,
+          "flow_magnitude": -0.10657845437526703,
+          "direction_entropy": -0.004178404808044434,
+          "stop_ratio": 0.0061559975147247314
+        },
+        "8": {
+          "normalized_count": 0.02218976616859436,
+          "flow_magnitude": -0.0869259387254715,
+          "direction_entropy": -0.012837469577789307,
+          "stop_ratio": -0.05450055003166199
+        },
+        "9": {
+          "normalized_count": -0.09640946984291077,
+          "flow_magnitude": -0.07992269843816757,
+          "direction_entropy": 0.012472271919250488,
+          "stop_ratio": -0.09664767980575562
+        },
+        "10": {
+          "normalized_count": -0.054333657026290894,
+          "flow_magnitude": -0.0983140617609024,
+          "direction_entropy": 0.048730552196502686,
+          "stop_ratio": -0.20015180110931396
+        }
+      },
+      "sign_counts": {
+        "normalized_count": {
+          "n_negative": 7,
+          "n_positive": 4
+        },
+        "flow_magnitude": {
+          "n_negative": 10,
+          "n_positive": 1
+        },
+        "direction_entropy": {
+          "n_negative": 8,
+          "n_positive": 3
+        },
+        "stop_ratio": {
+          "n_negative": 7,
+          "n_positive": 4
+        }
+      },
+      "n_clips": 11
+    }
+  }
+}

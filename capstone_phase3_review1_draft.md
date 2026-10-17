@@ -207,11 +207,14 @@ opposite. A single-horizon ablation would have missed this entirely.
 | 07 | 0.607 | 0.563 | 0.531 | 0.608 |
 | **mean** | **0.554** | **0.544** | **0.532** | **0.558** |
 
-Weaker than UMN -- attributed to a density mismatch (ShanghaiTech ~4.1
-persons/frame vs. UMN ~15.2) and, for scene 05 specifically, a mismatch in
-kind (its "anomalies" are small-group altercations, not crowd-scale panic --
-confirmed by direct frame inspection, not just the metric). Reported
-honestly as a negative-transfer finding, not hidden.
+Weaker than UMN. The explanation is a mismatch in the **kind** of anomaly,
+not in crowd density -- see Sect. 10, where correlating per-scene density
+against per-scene AUROC across all 8 evaluable scenes returns r=-0.481
+(p=0.228), i.e. no significant relationship, and negative in sign. Scene 05
+is the clearest case: its "anomalies" are small-group altercations, not
+crowd-scale panic (confirmed by direct frame inspection, not just the
+metric), and it scores below chance at every horizon. Reported honestly as a
+negative-transfer finding, not hidden.
 
 *Metric note*: the table above is the full-sample AUROC. `PAPER_RESULTS.md`
 also reports a stricter CLEAN_PRE+NEGATIVE-restricted version (excludes
@@ -268,36 +271,57 @@ single-window classifier has no structural reason to need.
 
 [1] is genuinely causal/online (unlike [4]) -- it predicts the next single
 Gradient-of-Motion (GoM) scalar from d=5 past values via LSTM, then flags an
-anomaly if the prediction error is statistically atypical. But two things
-limit a direct comparison: it only looks ~1/30s ahead (the next frame), not
-a genuine multi-second horizon, and it is evaluated *per video*, training
-online on that same video's own first 300 frames before testing on the rest
-of that same video -- the test video is never truly held out. We
-reimplemented [1]'s method (dense optical-flow GoM feature, single-step LSTM
-regressor, Box-Cox/Mahalanobis threshold) three ways to make this precise:
+anomaly if the prediction error is statistically atypical. Two properties
+shape how it can be compared. First, it looks ~1/30s ahead (the next frame),
+not a multi-second horizon. Second, it is evaluated *per video*: the model
+trains online on each test video's own first 300 frames before scoring the
+rest of that same video, so performance is measured with the scene already
+calibrated.
 
-| Method | Protocol | Score |
+Because this project targets cross-scene deployment -- a camera the model
+has never seen -- we evaluate under leave-one-clip-out instead. To compare
+like-for-like rather than against a figure measured under a different
+protocol, we reimplemented [1]'s method (dense optical-flow GoM feature,
+single-step LSTM regressor, Box-Cox/Mahalanobis threshold) and ran it under
+*our* protocol, on the identical frames and labels:
+
+| Method | Protocol | AUC |
 |---|---|---|
-| DeepROD [1], self-reported | Per-video online self-calibration | 0.992 avg AUC (UMN, their Table 3 -- 0.994 is their Accuracy, not AUC) |
-| DeepROD, our reimplementation | Per-video online self-calibration (same as paper) | 0.744 avg AUC |
-| DeepROD, our reimplementation | **Leave-one-clip-out (fair -- same protocol as our model)** | **0.749 AUC** |
-| This work (baseline LSTM) | Leave-one-clip-out | 0.963 (k=0) / 0.882 / 0.791 / 0.734 |
+| DeepROD, our reimplementation | Leave-one-clip-out (identical folds to ours) | **0.702 +/- 0.110** |
+| This work (baseline LSTM) | Leave-one-clip-out | **0.963** (k=0) / 0.882 / 0.791 / 0.734 |
 
-Three findings, each doing different work:
-1. **Under the one fair, matched-protocol comparison, our model wins**: 0.963
-   vs. 0.749 at the horizon DeepROD's ~1-frame lookahead is closest to in
-   spirit (k=0).
-2. **DeepROD's self-reported number does not reproduce** from the paper's
-   description alone (0.992 vs. our 0.744, same easier protocol as theirs)
-   -- a citable reproducibility gap in this literature, not a claim about
-   whose method is better.
-3. **DeepROD has no mechanism for multi-second forecasting at all** -- it
-   structurally cannot answer "will this be abnormal in 1/2/3 seconds," which
-   is the gap this project's k=30/60/90 heads fill.
+To keep that row fair, the reimplementation was given [1]'s full published
+hyperparameter search (their Sect. 4.2: layers 1-4, hidden units in
+{32,50,64,100}, epochs 5-30, d in {5,15,30} -- 504 configurations per fold,
+a space containing every architecture their Table 2 reports as a winner),
+their 80/20 train/validation split (their Sect. 3.2), and their own
+selection rule (minimum validation MSE). Two sanity checks: every selected
+model beats a mean-predicting constant on validation MSE, and 10 of 11 folds
+independently select d=5 -- the same value their Table 2 reports as best for
+every scene they tested.
 
-Full per-clip results: `outputs/reports/deeprod_protocol_diagnostic.json`
-(per-video self-calibration) and `outputs/reports/deeprod_loco_comparison.json`
-(the fair LOCO row).
+Two findings:
+1. **Under a matched protocol, our model scores higher**: 0.963 vs. 0.702 at
+   k=0, the horizon [1]'s single-frame lookahead is closest to in spirit.
+   Note this comparison does not survive Holm correction across the full
+   family of baseline tests (Sect. 9) -- it is the largest observed gap, but
+   11 folds cannot establish it at alpha=0.05.
+2. **DeepROD has no mechanism for multi-second forecasting** -- it
+   structurally cannot answer "will this be abnormal in 1/2/3 seconds,"
+   which is what this project's k=30/60/90 heads address.
+
+We do not compare against [1]'s reported figure (0.992 AUC under their
+per-video protocol), as the two protocols measure different things: theirs
+quantifies detection on a calibrated scene, ours generalization to an unseen
+one. Deviations forced by the paper leaving details unstated -- the dense
+optical-flow method (Farneback here), mini-batch size (32), and input
+standardization (required: raw GoM sums are O(10^2) and saturate an LSTM's
+gates without it) -- are recorded in `src/deeprod_gridsearch.py`.
+
+Full per-fold results: `outputs/reports/deeprod_gridsearch_loco.json`.
+(`deeprod_protocol_diagnostic.json` and `deeprod_loco_comparison.json` are
+superseded -- they predate both the input-standardization fix and the
+hyperparameter search, and their numbers should not be used.)
 
 ### 8. Zero-shot external validation -- Crowd Panic Dataset (Kaggle)
 
@@ -328,6 +352,80 @@ this as a supplementary sanity check on generalization, not benchmark-grade
 evidence: the ordering among the three non-panic classes doesn't track
 density cleanly (No Panic scores above Crowdy), only the panic/non-panic
 split is clean and strongly significant.
+
+### 9. Statistical significance of the headline results
+
+Every table above reports point estimates with fold-to-fold spread. This
+section tests them. Each method was evaluated on the *identical* 11
+leave-one-clip-out folds, so the folds pair exactly and support paired
+tests. Resampling is at the fold level, not the frame level -- the held-out
+clip is the independent unit, and frames within a clip are heavily
+autocorrelated, so a frame bootstrap would badly understate variance.
+Source: `src/significance_tests.py` ->
+`outputs/reports/significance_tests.json`.
+
+**Q1 -- is the model above chance at each horizon?** (10,000-resample
+percentile bootstrap over folds; one-sided sign test)
+
+| horizon | AUROC | 95% CI | sign test | verdict |
+|---|---|---|---|---|
+| k=0 | 0.963 | [0.932, 0.988] | 7/7, p=0.008 | **above chance** |
+| k=30 | 0.882 | [0.746, 0.978] | 7/7, p=0.008 | **above chance** |
+| k=60 | 0.791 | [0.573, 0.950] | 6/7, p=0.063 | CI excludes 0.5, sign test not significant |
+| k=90 | 0.734 | [0.545, 0.891] | 6/7, p=0.063 | CI excludes 0.5, sign test not significant |
+
+Forecasting ahead is statistically supported out to k=30 (1 second) by both
+measures. At k=60/90 the bootstrap CI excludes chance but the stricter sign
+test does not reach alpha=0.05 -- the evidence weakens with horizon rather
+than vanishing, and should be reported as suggestive, not established.
+
+**Q2 -- does the LSTM beat the baselines?** (Wilcoxon signed-rank on paired
+fold AUROCs, Holm-Bonferroni corrected across all 16 comparisons)
+
+**No comparison survives correction.** The largest raw effect is vs. the
+DeepROD reimplementation at k=0 (7/7 folds favour the LSTM, median gap
++0.270, p=0.016 raw), followed by the rule-based baseline at k=30 (7/8
+folds, +0.236, p=0.055 raw). Against logistic regression the median gap is
++-0.001 at every horizon -- the two are indistinguishable, consistent with
+Sect. 7's "learning matters more than recurrence" finding.
+
+This is a genuine limitation and is reported as one: with 7-11 folds these
+tests are severely underpowered, so a non-significant result means *this
+experiment cannot distinguish the methods*, not that they are equivalent.
+The point estimates consistently favour the LSTM; the sample size cannot
+confirm it. A larger clip corpus is the only fix, and is named as future
+work rather than argued around.
+
+### 10. Operating envelope -- where this works and where it does not
+
+Source: `src/operating_envelope.py` ->
+`outputs/reports/operating_envelope.json`.
+
+The UMN-vs-ShanghaiTech gap was previously attributed to crowd density
+(UMN ~15 persons/frame vs. ShanghaiTech ~4). **Testing that directly does
+not support it.** Correlating per-scene mean density against per-scene AUROC
+across the 8 evaluable ShanghaiTech scenes gives Pearson r=-0.481 (p=0.228),
+Spearman rho=-0.524 (p=0.183) -- statistically indistinguishable from zero,
+and *negative* in sign (sparser scenes scored slightly better, not worse).
+Density does not explain the ordering.
+
+The better-supported explanation is a mismatch in the **kind** of anomaly.
+Scene 05 scores below chance at every horizon (0.248-0.300), and direct
+frame inspection confirms its three anomalies are small-group physical
+altercations involving 2-5 people -- events that do not move a crowd-level
+aggregate and can push it the wrong way. UMN's anomaly is always collective
+escape, where a large fraction of visible people accelerate together.
+
+**Suited to:** collective, crowd-scale events; dense scenes (validated at
+~15 persons/frame); fixed cameras; lead times to k=30 established and
+k=60/90 suggestive.
+
+**Not suited to:** individual or small-group anomalies (a lone cyclist, a
+2-5 person scuffle); sparse scenes, where direction_entropy and stop_ratio
+are undefined 62%/67% of the time even within occupied zones; moving or
+newly-installed cameras, since the per-clip running normalizers need time to
+stabilise; any deployment needing a calibrated probability rather than a
+ranking, as all reported metrics are threshold-free.
 
 ### Demo
 
@@ -377,20 +475,37 @@ held-out clip -- ask me if you want that built.
 
 ## Slide 13 -- Remaining Modules
 
-- **Resolved: DeepROD-style controlled baseline (Slide 12, subsection 7).**
-  Reimplemented and evaluated under the same LOCO protocol as our model --
-  0.749 AUC vs. our 0.963 (k=0), a directly comparable row instead of a
-  self-reported number on their own protocol. Also surfaced a reproducibility
-  gap (their 0.992 self-reported vs. our 0.744 under their own easier
-  protocol), worth mentioning if asked.
-- Statistical significance testing on AUROC (currently reported as wide
-  confidence intervals only, per Section 6/10 of `PAPER_RESULTS.md`) --
-  the crowd-panic transfer test (Slide 12, subsection 8) already has this
-  (Mann-Whitney p=1.3e-35); the core UMN LOCO results still don't.
+- **Resolved: DeepROD controlled baseline (Slide 12, subsection 7).**
+  Reimplemented with their full published hyperparameter search and
+  evaluated under the same LOCO protocol as our model -- 0.702 AUC vs. our
+  0.963 (k=0), a directly comparable row measured on identical frames and
+  labels.
+- **Resolved: statistical significance testing (Slide 12, subsection 9).**
+  Bootstrap CIs and paired Wilcoxon tests with Holm correction, via
+  `src/significance_tests.py`. Outcome is mixed and reported as such:
+  above-chance forecasting is established to k=30, and no baseline
+  comparison survives correction at n=7-11 folds.
+- **Resolved: operating envelope (Slide 12, subsection 10).** The previous
+  density-mismatch explanation for the ShanghaiTech gap was tested and is
+  not supported (r=-0.481, p=0.228); anomaly *kind* is the better-supported
+  explanation.
+- **Resolved: live-pipeline hardening for continuous feeds.**
+  `stream_processor.py` previously terminated permanently on any failed
+  read -- correct for a file at EOF, fatal for a camera after one network
+  blip. Live sources (rtsp/http/camera-index) now reconnect with capped
+  exponential backoff (1s doubling to 30s), and all scene-dependent state
+  (tracker IDs, running normalizers, sequence buffer) is reset on
+  reconnect, since a window spanning an outage would pair frames separated
+  by an unknown gap. 14 tests pass.
+- **Open: comparison against recent published methods (2023-2026).** No
+  numbers table yet against current work in crowd anomaly detection or
+  video anomaly *anticipation* -- the latter is an established task name
+  (Cao et al., CVPR 2023) that this project's multi-horizon framing maps
+  onto directly, and citing it would ground the forecasting contribution
+  in existing literature rather than presenting it as novel framing.
 - ShanghaiTech thin-scene reporting refinement / possible additional scene
   coverage
 - Homography-based persons/m^2 feature (on backlog, not started)
-- [ANY OTHER PLANNED WORK -- fill in]
 
 ---
 

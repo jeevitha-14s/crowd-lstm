@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Crowd Risk Console</title>
+  <link rel="stylesheet" href="/ui/console.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">Crowd Risk Console</div>
+    <span id="mode" class="mode" hidden></span>
+    <div id="summary" class="summary"></div>
+    <div class="spacer"></div>
+    <div id="focusState" class="focus-state"></div>
+    <div id="conn" class="conn" title="Connection to console server"></div>
+    <time id="clock" class="clock"></time>
+  </header>
+
+  <div class="layout">
+    <main id="wall" class="wall">
+      <section id="focus" class="focus" hidden aria-live="polite">
+        <div class="focus-head">
+          <span id="focusName" class="focus-name"></span>
+          <span id="focusTier" class="tier-pill"></span>
+          <span id="focusReason" class="focus-reason"></span>
+          <span class="spacer"></span>
+          <span id="focusMeta" class="focus-meta"></span>
+          <button id="pinBtn" class="btn" type="button">Pin</button>
+          <button id="closeBtn" class="btn" type="button" title="Esc">Back to grid</button>
+        </div>
+        <div class="focus-video">
+          <canvas id="focusCanvas"></canvas>
+          <div id="focusStatus" class="status-overlay" hidden></div>
+          <div class="overlay-legend">
+            <span><i class="key-box"></i>Tracked people</span>
+            <span><i class="key-zone"></i>Zone motion</span>
+          </div>
+        </div>
+        <div class="forecast">
+          <div class="forecast-label">Forecast · next 3 s</div>
+          <div id="forecastHeadline" class="forecast-headline"></div>
+          <canvas id="ribbon" class="ribbon"></canvas>
+        </div>
+      </section>
+      <div id="tiles" class="tiles"></div>
+    </main>
+
+    <aside class="log">
+      <h2>Alert log</h2>
+      <ol id="logList" class="log-list"></ol>
+      <p id="logEmpty" class="log-empty">No tier changes yet.</p>
+    </aside>
+  </div>
+
+  <template id="tileTpl">
+    <div class="tile tier-GREEN" tabindex="0" role="button">
+      <canvas></canvas>
+      <span class="badge"><i class="dot"></i><b></b></span>
+      <span class="tile-name"></span>
+      <div class="status-overlay" hidden></div>
+    </div>
+  </template>
+
+  <script src="/ui/console.js"></script>
+</body>
+</html>

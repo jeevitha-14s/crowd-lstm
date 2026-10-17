@@ -1,4 +1,5 @@
 {
+  "SUPERSEDED": "SUPERSEDED -- do not use these numbers. Produced before (a) the input-standardization fix (raw GoM sums saturate the LSTM gates; the model here was performing worse than a mean-predicting constant) and (b) DeepROD's published hyperparameter grid search. Replaced by outputs/reports/deeprod_gridsearch_loco.json and outputs/reports/deeprod_gridsearch_pervideo.json.",
   "description": "DeepROD's method (GoM feature + single-step LSTM regressor + Box-Cox/Mahalanobis anomaly threshold) reimplemented and evaluated under this project's own leave-one-clip-out protocol -- regressor and reference distribution fit ONLY on the 10 training clips' normal-labeled windows, scored against the ENTIRE held-out clip. This is the row directly comparable to the baseline LSTM's LOCO numbers; the per-clip self-calibrated diagnostic in outputs/reports/deeprod_protocol_diagnostic.json is a different, easier protocol (matching the paper's own setup) and is not this row.",
   "model_config": {
     "d": 5,

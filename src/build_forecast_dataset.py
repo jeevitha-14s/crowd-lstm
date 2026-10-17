@@ -8,6 +8,9 @@ from typing import Dict, Tuple
 
 import numpy as np
 
+# Defaults build the tracked-feature tensor; --features/--meta/--out let the
+# identical windowing be applied to the optical-flow features, so the two
+# representations differ only in what was extracted per frame.
 FEATURES_PATH = Path("data/features/umn_features.npy")
 META_PATH = Path("data/features/umn_meta.csv")
 GROUNDTRUTH_PATH = Path("data/umn_groundtruth.csv")
@@ -44,16 +47,18 @@ def compute_clip_ranges(clip_ids: np.ndarray) -> Dict[int, Tuple[int, int]]:
     return ranges
 
 
-def build_dataset() -> None:
-    features = np.load(FEATURES_PATH)
-    clip_ids_per_frame = load_clip_ids(META_PATH)
+def build_dataset(features_path: Path = FEATURES_PATH, meta_path: Path = META_PATH,
+                  out_path: Path = OUT_PATH, seq_len: int = SEQ_LEN,
+                  stride: int = STRIDE) -> None:
+    features = np.load(features_path)
+    clip_ids_per_frame = load_clip_ids(meta_path)
     labels = load_labels(GROUNDTRUTH_PATH)
     total_frames = features.shape[0]
     assert clip_ids_per_frame.shape[0] == total_frames
     assert labels.shape[0] == total_frames
 
     ranges = compute_clip_ranges(clip_ids_per_frame)
-    history_span = (SEQ_LEN - 1) * STRIDE
+    history_span = (seq_len - 1) * stride
     max_horizon = max(HORIZONS)
 
     X_list = []
@@ -77,7 +82,7 @@ def build_dataset() -> None:
             # are checked via max_horizon only since HORIZONS is monotonic, so
             # if t+max(HORIZONS) fits, every smaller horizon fits too.
 
-        X = features[t - history_span : t + 1 : STRIDE]
+        X = features[t - history_span : t + 1 : stride]
         X_list.append(X)
         for k in HORIZONS:
             y_lists[k].append(labels[t + k])
@@ -92,8 +97,8 @@ def build_dataset() -> None:
     for k in HORIZONS:
         save_kwargs[f"y_{k}"] = np.array(y_lists[k], dtype=np.int64)
 
-    OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    np.savez(OUT_PATH, **save_kwargs)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    np.savez(out_path, **save_kwargs)
 
     n_samples = X_arr.shape[0]
     dropped_by_boundary = global_candidates - n_samples
@@ -125,4 +130,13 @@ def build_dataset() -> None:
 
 
 if __name__ == "__main__":
-    build_dataset()
+    import argparse
+
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--features", type=Path, default=FEATURES_PATH)
+    ap.add_argument("--meta", type=Path, default=META_PATH)
+    ap.add_argument("--out", type=Path, default=OUT_PATH)
+    ap.add_argument("--seq-len", type=int, default=SEQ_LEN)
+    ap.add_argument("--stride", type=int, default=STRIDE)
+    a = ap.parse_args()
+    build_dataset(a.features, a.meta, a.out, a.seq_len, a.stride)

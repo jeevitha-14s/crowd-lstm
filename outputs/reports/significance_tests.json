@@ -1,0 +1,708 @@
+{
+  "per_horizon": {
+    "0": {
+      "lstm_above_chance_full_set": {
+        "n_folds": 7,
+        "mean_auroc": 0.9629613773006357,
+        "ci95_lo": 0.9316607354768209,
+        "ci95_hi": 0.9881270565562115,
+        "ci_excludes_0.5": true,
+        "sign_test": {
+          "n": 7,
+          "n_above": 7,
+          "p_value": 0.0078125
+        }
+      },
+      "lstm_above_chance_common_subset": {
+        "n_folds": 7,
+        "mean_auroc": 0.9629613773006357,
+        "ci95_lo": 0.9316607354768209,
+        "ci95_hi": 0.9881270565562115,
+        "ci_excludes_0.5": true,
+        "sign_test": {
+          "n": 7,
+          "n_above": 7,
+          "p_value": 0.0078125
+        }
+      },
+      "lstm_vs_baselines": {
+        "rule_based": {
+          "n_pairs": 7,
+          "median_diff": 0.04451923076923081,
+          "mean_diff": 0.2767644021126555,
+          "n_favouring_a": 5,
+          "statistic": 4.0,
+          "p_value": 0.109375,
+          "clips": [
+            0,
+            1,
+            2,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        "logistic_regression": {
+          "n_pairs": 7,
+          "median_diff": 0.001052631578947416,
+          "mean_diff": 0.0389772602276728,
+          "n_favouring_a": 5,
+          "statistic": 6.0,
+          "p_value": 0.21875,
+          "clips": [
+            0,
+            1,
+            2,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        "zone_attention_lstm": {
+          "n_pairs": 7,
+          "median_diff": 0.0005288461538462963,
+          "mean_diff": 0.027525436195030322,
+          "n_favouring_a": 4,
+          "statistic": 11.0,
+          "p_value": 0.6875,
+          "clips": [
+            0,
+            1,
+            2,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        "deeprod_reimpl": {
+          "n_pairs": 7,
+          "median_diff": 0.27029572796268075,
+          "mean_diff": 0.31582581861405196,
+          "n_favouring_a": 7,
+          "statistic": 0.0,
+          "p_value": 0.015625,
+          "clips": [
+            0,
+            1,
+            2,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        "random_forest": {
+          "n_pairs": 7,
+          "median_diff": -0.0005288461538460743,
+          "mean_diff": 0.04472400938151518,
+          "n_favouring_a": 3,
+          "statistic": 11.0,
+          "p_value": 0.6875,
+          "clips": [
+            0,
+            1,
+            2,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        "gradient_boosting": {
+          "n_pairs": 7,
+          "median_diff": 0.06421052631578938,
+          "mean_diff": 0.10326540794345185,
+          "n_favouring_a": 6,
+          "statistic": 3.0,
+          "p_value": 0.078125,
+          "clips": [
+            0,
+            1,
+            2,
+            4,
+            5,
+            6,
+            7
+          ]
+        }
+      }
+    },
+    "30": {
+      "lstm_above_chance_full_set": {
+        "n_folds": 8,
+        "mean_auroc": 0.8627095704652612,
+        "ci95_lo": 0.7433562395812623,
+        "ci95_hi": 0.9598892252340882,
+        "ci_excludes_0.5": true,
+        "sign_test": {
+          "n": 8,
+          "n_above": 8,
+          "p_value": 0.00390625
+        }
+      },
+      "lstm_above_chance_common_subset": {
+        "n_folds": 7,
+        "mean_auroc": 0.8820277669282799,
+        "ci95_lo": 0.7464555250524053,
+        "ci95_hi": 0.9777526153554866,
+        "ci_excludes_0.5": true,
+        "sign_test": {
+          "n": 7,
+          "n_above": 7,
+          "p_value": 0.0078125
+        }
+      },
+      "lstm_vs_baselines": {
+        "rule_based": {
+          "n_pairs": 8,
+          "median_diff": 0.23556217587995149,
+          "mean_diff": 0.3372767525078886,
+          "n_favouring_a": 7,
+          "statistic": 4.0,
+          "p_value": 0.0546875,
+          "clips": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        "logistic_regression": {
+          "n_pairs": 8,
+          "median_diff": 0.001042785242223454,
+          "mean_diff": -0.042271220606387244,
+          "n_favouring_a": 4,
+          "statistic": 17.0,
+          "p_value": 0.9453125,
+          "clips": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        "zone_attention_lstm": {
+          "n_pairs": 8,
+          "median_diff": -0.00658492493169921,
+          "mean_diff": -0.030534854614365156,
+          "n_favouring_a": 2,
+          "statistic": 13.0,
+          "p_value": 0.546875,
+          "clips": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        "deeprod_reimpl": {
+          "n_pairs": 8,
+          "median_diff": 0.2548612455295142,
+          "mean_diff": 0.21306719628392204,
+          "n_favouring_a": 7,
+          "statistic": 4.0,
+          "p_value": 0.0546875,
+          "clips": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        "random_forest": {
+          "n_pairs": 8,
+          "median_diff": 0.003861542435276255,
+          "mean_diff": 0.04507299826419964,
+          "n_favouring_a": 6,
+          "statistic": 10.0,
+          "p_value": 0.3125,
+          "clips": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        "gradient_boosting": {
+          "n_pairs": 8,
+          "median_diff": -0.021310989929503255,
+          "mean_diff": 0.025886222805054412,
+          "n_favouring_a": 3,
+          "statistic": 12.0,
+          "p_value": 0.4609375,
+          "clips": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        }
+      }
+    },
+    "60": {
+      "lstm_above_chance_full_set": {
+        "n_folds": 11,
+        "mean_auroc": 0.70534917879149,
+        "ci95_lo": 0.5344190938205473,
+        "ci95_hi": 0.8557715366545239,
+        "ci_excludes_0.5": true,
+        "sign_test": {
+          "n": 11,
+          "n_above": 9,
+          "p_value": 0.03271484375
+        }
+      },
+      "lstm_above_chance_common_subset": {
+        "n_folds": 7,
+        "mean_auroc": 0.7912648065566897,
+        "ci95_lo": 0.5728323146473152,
+        "ci95_hi": 0.9503195131358418,
+        "ci_excludes_0.5": true,
+        "sign_test": {
+          "n": 7,
+          "n_above": 6,
+          "p_value": 0.0625
+        }
+      },
+      "lstm_vs_baselines": {
+        "rule_based": {
+          "n_pairs": 11,
+          "median_diff": 0.054060570987654155,
+          "mean_diff": 0.08445075305374804,
+          "n_favouring_a": 7,
+          "statistic": 24.0,
+          "p_value": 0.46484375,
+          "clips": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ]
+        },
+        "logistic_regression": {
+          "n_pairs": 11,
+          "median_diff": -0.009948591012947428,
+          "mean_diff": -0.06434976174759748,
+          "n_favouring_a": 5,
+          "statistic": 29.0,
+          "p_value": 0.7646484375,
+          "clips": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ]
+        },
+        "zone_attention_lstm": {
+          "n_pairs": 11,
+          "median_diff": 0.046338383838383956,
+          "mean_diff": -0.04590638561771356,
+          "n_favouring_a": 7,
+          "statistic": 30.0,
+          "p_value": 0.8310546875,
+          "clips": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ]
+        },
+        "deeprod_reimpl": {
+          "n_pairs": 11,
+          "median_diff": 0.09830384078532939,
+          "mean_diff": 0.0034056806837570275,
+          "n_favouring_a": 7,
+          "statistic": 28.0,
+          "p_value": 0.7001953125,
+          "clips": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ]
+        },
+        "random_forest": {
+          "n_pairs": 11,
+          "median_diff": -0.12198591820987659,
+          "mean_diff": 0.009858682714350732,
+          "n_favouring_a": 4,
+          "statistic": 31.0,
+          "p_value": 0.8984375,
+          "clips": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ]
+        },
+        "gradient_boosting": {
+          "n_pairs": 11,
+          "median_diff": -0.06245074862096134,
+          "mean_diff": 0.043475631272260035,
+          "n_favouring_a": 5,
+          "statistic": 33.0,
+          "p_value": 1.0,
+          "clips": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ]
+        }
+      }
+    },
+    "90": {
+      "lstm_above_chance_full_set": {
+        "n_folds": 11,
+        "mean_auroc": 0.7081429949265474,
+        "ci95_lo": 0.5821614134879478,
+        "ci95_hi": 0.8231034917395198,
+        "ci_excludes_0.5": true,
+        "sign_test": {
+          "n": 11,
+          "n_above": 10,
+          "p_value": 0.005859375
+        }
+      },
+      "lstm_above_chance_common_subset": {
+        "n_folds": 7,
+        "mean_auroc": 0.7337472880112832,
+        "ci95_lo": 0.5450954369851366,
+        "ci95_hi": 0.8912301671443137,
+        "ci_excludes_0.5": true,
+        "sign_test": {
+          "n": 7,
+          "n_above": 6,
+          "p_value": 0.0625
+        }
+      },
+      "lstm_vs_baselines": {
+        "rule_based": {
+          "n_pairs": 11,
+          "median_diff": -0.0753405994550409,
+          "mean_diff": 0.09627681469158182,
+          "n_favouring_a": 5,
+          "statistic": 22.0,
+          "p_value": 0.365234375,
+          "clips": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ]
+        },
+        "logistic_regression": {
+          "n_pairs": 11,
+          "median_diff": 0.0008255933952527883,
+          "mean_diff": 0.07300673924391764,
+          "n_favouring_a": 6,
+          "statistic": 26.0,
+          "p_value": 0.5771484375,
+          "clips": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ]
+        },
+        "zone_attention_lstm": {
+          "n_pairs": 11,
+          "median_diff": 0.21820342494972267,
+          "mean_diff": 0.10070725250798716,
+          "n_favouring_a": 7,
+          "statistic": 24.0,
+          "p_value": 0.46484375,
+          "clips": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ]
+        },
+        "deeprod_reimpl": {
+          "n_pairs": 11,
+          "median_diff": 0.09568453679659394,
+          "mean_diff": 0.006199496818814709,
+          "n_favouring_a": 6,
+          "statistic": 31.0,
+          "p_value": 0.8984375,
+          "clips": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ]
+        },
+        "random_forest": {
+          "n_pairs": 11,
+          "median_diff": 0.015755208333333437,
+          "mean_diff": 0.09713080877828775,
+          "n_favouring_a": 6,
+          "statistic": 29.0,
+          "p_value": 0.7646484375,
+          "clips": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ]
+        },
+        "gradient_boosting": {
+          "n_pairs": 11,
+          "median_diff": -0.00188888888888894,
+          "mean_diff": 0.1134414491305026,
+          "n_favouring_a": 5,
+          "statistic": 24.0,
+          "p_value": 0.46484375,
+          "clips": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ]
+        }
+      }
+    }
+  },
+  "holm_bonferroni_across_all_comparisons": {
+    "k=0:deeprod_reimpl": {
+      "p_raw": 0.015625,
+      "holm_threshold": 0.0020833333333333333,
+      "significant": false
+    },
+    "k=30:rule_based": {
+      "p_raw": 0.0546875,
+      "holm_threshold": 0.002173913043478261,
+      "significant": false
+    },
+    "k=30:deeprod_reimpl": {
+      "p_raw": 0.0546875,
+      "holm_threshold": 0.002272727272727273,
+      "significant": false
+    },
+    "k=0:gradient_boosting": {
+      "p_raw": 0.078125,
+      "holm_threshold": 0.002380952380952381,
+      "significant": false
+    },
+    "k=0:rule_based": {
+      "p_raw": 0.109375,
+      "holm_threshold": 0.0025,
+      "significant": false
+    },
+    "k=0:logistic_regression": {
+      "p_raw": 0.21875,
+      "holm_threshold": 0.002631578947368421,
+      "significant": false
+    },
+    "k=30:random_forest": {
+      "p_raw": 0.3125,
+      "holm_threshold": 0.002777777777777778,
+      "significant": false
+    },
+    "k=90:rule_based": {
+      "p_raw": 0.365234375,
+      "holm_threshold": 0.0029411764705882353,
+      "significant": false
+    },
+    "k=30:gradient_boosting": {
+      "p_raw": 0.4609375,
+      "holm_threshold": 0.003125,
+      "significant": false
+    },
+    "k=60:rule_based": {
+      "p_raw": 0.46484375,
+      "holm_threshold": 0.0033333333333333335,
+      "significant": false
+    },
+    "k=90:zone_attention_lstm": {
+      "p_raw": 0.46484375,
+      "holm_threshold": 0.0035714285714285718,
+      "significant": false
+    },
+    "k=90:gradient_boosting": {
+      "p_raw": 0.46484375,
+      "holm_threshold": 0.0038461538461538464,
+      "significant": false
+    },
+    "k=30:zone_attention_lstm": {
+      "p_raw": 0.546875,
+      "holm_threshold": 0.004166666666666667,
+      "significant": false
+    },
+    "k=90:logistic_regression": {
+      "p_raw": 0.5771484375,
+      "holm_threshold": 0.004545454545454546,
+      "significant": false
+    },
+    "k=0:zone_attention_lstm": {
+      "p_raw": 0.6875,
+      "holm_threshold": 0.005,
+      "significant": false
+    },
+    "k=0:random_forest": {
+      "p_raw": 0.6875,
+      "holm_threshold": 0.005555555555555556,
+      "significant": false
+    },
+    "k=60:deeprod_reimpl": {
+      "p_raw": 0.7001953125,
+      "holm_threshold": 0.00625,
+      "significant": false
+    },
+    "k=60:logistic_regression": {
+      "p_raw": 0.7646484375,
+      "holm_threshold": 0.0071428571428571435,
+      "significant": false
+    },
+    "k=90:random_forest": {
+      "p_raw": 0.7646484375,
+      "holm_threshold": 0.008333333333333333,
+      "significant": false
+    },
+    "k=60:zone_attention_lstm": {
+      "p_raw": 0.8310546875,
+      "holm_threshold": 0.01,
+      "significant": false
+    },
+    "k=60:random_forest": {
+      "p_raw": 0.8984375,
+      "holm_threshold": 0.0125,
+      "significant": false
+    },
+    "k=90:deeprod_reimpl": {
+      "p_raw": 0.8984375,
+      "holm_threshold": 0.016666666666666666,
+      "significant": false
+    },
+    "k=30:logistic_regression": {
+      "p_raw": 0.9453125,
+      "holm_threshold": 0.025,
+      "significant": false
+    },
+    "k=60:gradient_boosting": {
+      "p_raw": 1.0,
+      "holm_threshold": 0.05,
+      "significant": false
+    }
+  },
+  "method_notes": {
+    "unit_of_resampling": "fold (one held-out clip), not frame",
+    "n_bootstrap": 10000,
+    "alpha": 0.05,
+    "deeprod_horizon_note": "DeepROD produces a single AUROC per fold with no horizon concept; the same value is compared at every horizon, so only the k=0 comparison is a like-for-like task match. The k=30/60/90 rows show what its single-frame lookahead scores against labels it was never designed to predict.",
+    "power_caveat": "n=7-11 folds. These tests are severely underpowered: a non-significant result means the experiment cannot distinguish the methods, not that they are equivalent.",
+    "why_not_delong": "Per-frame prediction scores were not saved by train_forecast_model.py, so a DeLong test on paired ROC curves is not computable without retraining every method."
+  }
+}

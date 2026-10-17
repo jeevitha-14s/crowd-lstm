@@ -1,0 +1,397 @@
+{
+  "description": "Zero-shot cross-dataset transfer: models/umn_forecast_lstm.pt (trained on UMN only, no MED frame seen) evaluated on MED's 11 panic videos at all four forecast horizons. First external test of the forecast horizons themselves; the Crowd Panic external check could only test k=0 because it lacks onset annotation.",
+  "checkpoint": "models/umn_forecast_lstm.pt",
+  "checkpoint_note": "This checkpoint must not be used for UMN metrics (it trained on all 11 UMN clips). It is valid here because MED is entirely unseen by it.",
+  "n_windows": 11430,
+  "pooled": {
+    "0": {
+      "n": 11430,
+      "n_pos": 1017,
+      "excluded": false,
+      "auroc": 0.8071941500399291,
+      "auprc": 0.5570577819274696
+    },
+    "30": {
+      "n": 11430,
+      "n_pos": 1342,
+      "excluded": false,
+      "auroc": 0.7393477265931635,
+      "auprc": 0.4845445244698626
+    },
+    "60": {
+      "n": 11430,
+      "n_pos": 1672,
+      "excluded": false,
+      "auroc": 0.6353947650363682,
+      "auprc": 0.3590047018274829
+    },
+    "90": {
+      "n": 11430,
+      "n_pos": 2002,
+      "excluded": false,
+      "auroc": 0.5948866046978054,
+      "auprc": 0.23414490656931217
+    }
+  },
+  "per_video": {
+    "0": {
+      "0": {
+        "n": 1365,
+        "n_pos": 0,
+        "excluded": true,
+        "auroc": NaN,
+        "auprc": NaN
+      },
+      "30": {
+        "n": 1365,
+        "n_pos": 25,
+        "excluded": false,
+        "auroc": 0.042895522388059715,
+        "auprc": 0.009934470698592707
+      },
+      "60": {
+        "n": 1365,
+        "n_pos": 55,
+        "excluded": false,
+        "auroc": 0.0063011797362942275,
+        "auprc": 0.0208484024124813
+      },
+      "90": {
+        "n": 1365,
+        "n_pos": 85,
+        "excluded": false,
+        "auroc": 0.16589154411764706,
+        "auprc": 0.03713199087935127
+      }
+    },
+    "1": {
+      "0": {
+        "n": 1035,
+        "n_pos": 10,
+        "excluded": false,
+        "auroc": 0.9999024390243902,
+        "auprc": 0.9909090909090909
+      },
+      "30": {
+        "n": 1035,
+        "n_pos": 40,
+        "excluded": false,
+        "auroc": 0.8095226130653266,
+        "auprc": 0.08893772140160452
+      },
+      "60": {
+        "n": 1035,
+        "n_pos": 70,
+        "excluded": false,
+        "auroc": 0.5386676535899334,
+        "auprc": 0.06871070849376167
+      },
+      "90": {
+        "n": 1035,
+        "n_pos": 100,
+        "excluded": false,
+        "auroc": 0.19263101604278077,
+        "auprc": 0.06002385704798675
+      }
+    },
+    "2": {
+      "0": {
+        "n": 775,
+        "n_pos": 20,
+        "excluded": false,
+        "auroc": 0.21066225165562913,
+        "auprc": 0.01682128919945962
+      },
+      "30": {
+        "n": 775,
+        "n_pos": 50,
+        "excluded": false,
+        "auroc": 0.3201931034482759,
+        "auprc": 0.044602893067566485
+      },
+      "60": {
+        "n": 775,
+        "n_pos": 80,
+        "excluded": false,
+        "auroc": 0.4049460431654677,
+        "auprc": 0.0802218500562058
+      },
+      "90": {
+        "n": 775,
+        "n_pos": 110,
+        "excluded": false,
+        "auroc": 0.5582091592617908,
+        "auprc": 0.14526119248562616
+      }
+    },
+    "3": {
+      "0": {
+        "n": 805,
+        "n_pos": 95,
+        "excluded": false,
+        "auroc": 0.947531504818384,
+        "auprc": 0.6772928944380926
+      },
+      "30": {
+        "n": 805,
+        "n_pos": 125,
+        "excluded": false,
+        "auroc": 0.4402588235294118,
+        "auprc": 0.14341759232684803
+      },
+      "60": {
+        "n": 805,
+        "n_pos": 155,
+        "excluded": false,
+        "auroc": 0.2983622828784119,
+        "auprc": 0.13275935997542743
+      },
+      "90": {
+        "n": 805,
+        "n_pos": 185,
+        "excluded": false,
+        "auroc": 0.45665213600697474,
+        "auprc": 0.2014254346615585
+      }
+    },
+    "4": {
+      "0": {
+        "n": 725,
+        "n_pos": 60,
+        "excluded": false,
+        "auroc": 0.6143358395989975,
+        "auprc": 0.13878073910491956
+      },
+      "30": {
+        "n": 725,
+        "n_pos": 90,
+        "excluded": false,
+        "auroc": 0.5478390201224848,
+        "auprc": 0.27706183874081614
+      },
+      "60": {
+        "n": 725,
+        "n_pos": 120,
+        "excluded": false,
+        "auroc": 0.5243939393939394,
+        "auprc": 0.29635679438671597
+      },
+      "90": {
+        "n": 725,
+        "n_pos": 150,
+        "excluded": false,
+        "auroc": 0.6830492753623187,
+        "auprc": 0.4376579793895966
+      }
+    },
+    "5": {
+      "0": {
+        "n": 707,
+        "n_pos": 202,
+        "excluded": false,
+        "auroc": 0.759641211645917,
+        "auprc": 0.6304053498259268
+      },
+      "30": {
+        "n": 707,
+        "n_pos": 232,
+        "excluded": false,
+        "auroc": 0.7044010889292196,
+        "auprc": 0.5675364098432965
+      },
+      "60": {
+        "n": 707,
+        "n_pos": 262,
+        "excluded": false,
+        "auroc": 0.5068616519427053,
+        "auprc": 0.49880264153654846
+      },
+      "90": {
+        "n": 707,
+        "n_pos": 292,
+        "excluded": false,
+        "auroc": 0.7463690377950156,
+        "auprc": 0.6432586398427342
+      }
+    },
+    "6": {
+      "0": {
+        "n": 610,
+        "n_pos": 237,
+        "excluded": false,
+        "auroc": 0.9988574789877942,
+        "auprc": 0.9982477686637117
+      },
+      "30": {
+        "n": 610,
+        "n_pos": 267,
+        "excluded": false,
+        "auroc": 0.9922363809087038,
+        "auprc": 0.9917397210295237
+      },
+      "60": {
+        "n": 610,
+        "n_pos": 297,
+        "excluded": false,
+        "auroc": 0.8675250911672636,
+        "auprc": 0.9185501300797075
+      },
+      "90": {
+        "n": 610,
+        "n_pos": 327,
+        "excluded": false,
+        "auroc": 0.8743583924962989,
+        "auprc": 0.9281338448832357
+      }
+    },
+    "7": {
+      "0": {
+        "n": 663,
+        "n_pos": 118,
+        "excluded": false,
+        "auroc": 0.8697403203234334,
+        "auprc": 0.7895334546430232
+      },
+      "30": {
+        "n": 663,
+        "n_pos": 148,
+        "excluded": false,
+        "auroc": 0.8531356599317764,
+        "auprc": 0.7698406180338719
+      },
+      "60": {
+        "n": 663,
+        "n_pos": 178,
+        "excluded": false,
+        "auroc": 0.728703810957952,
+        "auprc": 0.6609597492784501
+      },
+      "90": {
+        "n": 663,
+        "n_pos": 208,
+        "excluded": false,
+        "auroc": 0.41499366018596784,
+        "auprc": 0.27293232333214223
+      }
+    },
+    "8": {
+      "0": {
+        "n": 770,
+        "n_pos": 55,
+        "excluded": false,
+        "auroc": 0.9474380165289256,
+        "auprc": 0.7428735441583415
+      },
+      "30": {
+        "n": 770,
+        "n_pos": 85,
+        "excluded": false,
+        "auroc": 0.7956204379562044,
+        "auprc": 0.49699014868403507
+      },
+      "60": {
+        "n": 770,
+        "n_pos": 115,
+        "excluded": false,
+        "auroc": 0.6555194158645867,
+        "auprc": 0.3774462730212174
+      },
+      "90": {
+        "n": 770,
+        "n_pos": 145,
+        "excluded": false,
+        "auroc": 0.4919944827586207,
+        "auprc": 0.1684749890729723
+      }
+    },
+    "9": {
+      "0": {
+        "n": 2058,
+        "n_pos": 108,
+        "excluded": false,
+        "auroc": 0.6687796771130105,
+        "auprc": 0.07387932328809269
+      },
+      "30": {
+        "n": 2058,
+        "n_pos": 138,
+        "excluded": false,
+        "auroc": 0.8844995471014492,
+        "auprc": 0.2672418339433951
+      },
+      "60": {
+        "n": 2058,
+        "n_pos": 168,
+        "excluded": false,
+        "auroc": 0.8163580246913579,
+        "auprc": 0.20889626175684553
+      },
+      "90": {
+        "n": 2058,
+        "n_pos": 198,
+        "excluded": false,
+        "auroc": 0.7175328554360811,
+        "auprc": 0.14572562037954176
+      }
+    },
+    "10": {
+      "0": {
+        "n": 1917,
+        "n_pos": 112,
+        "excluded": false,
+        "auroc": 0.9872378314206569,
+        "auprc": 0.9007862838775804
+      },
+      "30": {
+        "n": 1917,
+        "n_pos": 142,
+        "excluded": false,
+        "auroc": 0.9589486213052966,
+        "auprc": 0.8059072281377642
+      },
+      "60": {
+        "n": 1917,
+        "n_pos": 172,
+        "excluded": false,
+        "auroc": 0.9238855200906244,
+        "auprc": 0.7022560759532644
+      },
+      "90": {
+        "n": 1917,
+        "n_pos": 202,
+        "excluded": false,
+        "auroc": 0.8120976820714141,
+        "auprc": 0.5525220362587877
+      }
+    }
+  },
+  "per_video_aggregate": {
+    "0": {
+      "auroc_mean": 0.8004126571117138,
+      "auroc_std": 0.23739557233892258,
+      "n_videos": 10
+    },
+    "30": {
+      "auroc_mean": 0.6681409835169281,
+      "auroc_std": 0.283901070158865,
+      "n_videos": 11
+    },
+    "60": {
+      "auroc_mean": 0.5701386012253215,
+      "auroc_std": 0.2581019837214202,
+      "n_videos": 11
+    },
+    "90": {
+      "auroc_mean": 0.55579811286681,
+      "auroc_std": 0.22633209534619012,
+      "n_videos": 11
+    }
+  },
+  "umn_loco_reference": {
+    "0": 0.963,
+    "30": 0.882,
+    "60": 0.791,
+    "90": 0.734
+  },
+  "reference_note": "UMN common-fold LOCO AUROC, from outputs/reports/umn_loco_results.json"
+}

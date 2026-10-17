@@ -55,3 +55,47 @@ def test_reset_clears_state():
     assert buf.is_ready()
     buf.reset()
     assert not buf.is_ready()
+
+
+# --- live-source detection and reconnect policy ---
+
+
+def test_is_live_source_distinguishes_streams_from_files():
+    """Drives whether a failed read is retried or treated as end-of-stream:
+    getting this wrong either loops forever on a finished file or kills a
+    camera feed on the first dropped packet."""
+    from src.stream_processor import is_live_source
+
+    assert is_live_source("rtsp://localhost:8554/umn")
+    assert is_live_source("RTSP://LOCALHOST:8554/UMN")  # scheme is case-insensitive
+    assert is_live_source("http://cam.local/stream.mjpg")
+    assert is_live_source("0")  # OpenCV local-camera index
+    assert not is_live_source("data/raw/umn/Crowd-Activity-All.avi")
+    assert not is_live_source("/abs/path/to/video.mp4")
+    assert not is_live_source("rtsp_notes.txt")  # substring, not a scheme
+
+
+def test_reconnect_backoff_is_capped_and_doubles():
+    from src.stream_processor import RECONNECT_BACKOFF_MAX_S, RECONNECT_BACKOFF_START_S
+
+    backoff, seen = RECONNECT_BACKOFF_START_S, []
+    for _ in range(12):
+        seen.append(backoff)
+        backoff = min(backoff * 2, RECONNECT_BACKOFF_MAX_S)
+    assert seen[0] == RECONNECT_BACKOFF_START_S
+    assert seen[1] == RECONNECT_BACKOFF_START_S * 2  # doubles
+    assert max(seen) == RECONNECT_BACKOFF_MAX_S  # and is capped
+    assert seen[-1] == RECONNECT_BACKOFF_MAX_S
+
+
+def test_sequence_buffer_reset_prevents_spanning_an_outage():
+    """After a reconnect the consumer resets the buffer. Without that, the
+    window would pair pre-outage and post-outage frames as if contiguous."""
+    buf = SequenceBuffer(seq_len=3, stride=2, feature_dim=2)
+    for fid in (1, 3, 5):
+        buf.push(fid, np.full(2, float(fid)))
+    assert buf.is_ready()
+    buf.reset()
+    assert not buf.is_ready()
+    buf.push(100, np.full(2, 100.0))
+    assert not buf.is_ready()  # must refill from scratch, not resume mid-window

@@ -1,0 +1,554 @@
+{
+  "model_config": {
+    "hidden_size": 64,
+    "num_layers": 1,
+    "dropout": 0.2,
+    "weight_decay": 0.0001,
+    "horizons": [
+      0,
+      30,
+      60,
+      90
+    ],
+    "inner_val_clips": 2,
+    "patience": 20
+  },
+  "note_scene": "No clip-to-scene (lawn/indoor/plaza) mapping exists in any saved artifact; 'scene' is null for every fold.",
+  "folds": [
+    {
+      "fold_clip": 0,
+      "scene": null,
+      "val_clips": [
+        1,
+        8
+      ],
+      "best_epoch": 16,
+      "stopped_epoch": 38,
+      "test_n_frames": 390,
+      "horizons": {
+        "0": {
+          "n_test": 390,
+          "n_pos": 10,
+          "excluded": false,
+          "auroc": 0.976578947368421,
+          "auprc": 0.7796853146853147
+        },
+        "30": {
+          "n_test": 390,
+          "n_pos": 40,
+          "excluded": false,
+          "auroc": 0.9896428571428572,
+          "auprc": 0.9119980959678207
+        },
+        "60": {
+          "n_test": 390,
+          "n_pos": 70,
+          "excluded": false,
+          "auroc": 0.9876785714285714,
+          "auprc": 0.9623949962227643
+        },
+        "90": {
+          "n_test": 390,
+          "n_pos": 90,
+          "excluded": false,
+          "auroc": 0.9781111111111112,
+          "auprc": 0.9341662104967947
+        }
+      }
+    },
+    {
+      "fold_clip": 1,
+      "scene": null,
+      "val_clips": [
+        5,
+        7
+      ],
+      "best_epoch": 11,
+      "stopped_epoch": 33,
+      "test_n_frames": 593,
+      "horizons": {
+        "0": {
+          "n_test": 593,
+          "n_pos": 33,
+          "excluded": false,
+          "auroc": 0.9904761904761905,
+          "auprc": 0.8868882842305221
+        },
+        "30": {
+          "n_test": 593,
+          "n_pos": 63,
+          "excluded": false,
+          "auroc": 0.8902964959568733,
+          "auprc": 0.534008296782837
+        },
+        "60": {
+          "n_test": 593,
+          "n_pos": 93,
+          "excluded": false,
+          "auroc": 0.8571827956989247,
+          "auprc": 0.5024490618698225
+        },
+        "90": {
+          "n_test": 593,
+          "n_pos": 110,
+          "excluded": false,
+          "auroc": 0.8227366836062489,
+          "auprc": 0.3691939171434447
+        }
+      }
+    },
+    {
+      "fold_clip": 2,
+      "scene": null,
+      "val_clips": [
+        1,
+        7
+      ],
+      "best_epoch": 5,
+      "stopped_epoch": 27,
+      "test_n_frames": 308,
+      "horizons": {
+        "0": {
+          "n_test": 308,
+          "n_pos": 100,
+          "excluded": false,
+          "auroc": 0.9905769230769231,
+          "auprc": 0.9832485641291469
+        },
+        "30": {
+          "n_test": 308,
+          "n_pos": 130,
+          "excluded": false,
+          "auroc": 0.9847882454624027,
+          "auprc": 0.9797836348731411
+        },
+        "60": {
+          "n_test": 308,
+          "n_pos": 160,
+          "excluded": false,
+          "auroc": 0.9909206081081081,
+          "auprc": 0.9917919347460021
+        },
+        "90": {
+          "n_test": 308,
+          "n_pos": 180,
+          "excluded": false,
+          "auroc": 0.9208767361111111,
+          "auprc": 0.9373064031523926
+        }
+      }
+    },
+    {
+      "fold_clip": 3,
+      "scene": null,
+      "val_clips": [
+        6,
+        9
+      ],
+      "best_epoch": 0,
+      "stopped_epoch": 22,
+      "test_n_frames": 456,
+      "horizons": {
+        "0": {
+          "n_test": 456,
+          "n_pos": 0,
+          "excluded": true,
+          "auroc": NaN,
+          "auprc": NaN
+        },
+        "30": {
+          "n_test": 456,
+          "n_pos": 22,
+          "excluded": false,
+          "auroc": 0.9969627147046503,
+          "auprc": 0.9511248852157943
+        },
+        "60": {
+          "n_test": 456,
+          "n_pos": 52,
+          "excluded": false,
+          "auroc": 0.9152227722772277,
+          "auprc": 0.6762948871045614
+        },
+        "90": {
+          "n_test": 456,
+          "n_pos": 80,
+          "excluded": false,
+          "auroc": 0.7448470744680851,
+          "auprc": 0.41731986593257736
+        }
+      }
+    },
+    {
+      "fold_clip": 4,
+      "scene": null,
+      "val_clips": [
+        5,
+        10
+      ],
+      "best_epoch": 5,
+      "stopped_epoch": 27,
+      "test_n_frames": 533,
+      "horizons": {
+        "0": {
+          "n_test": 533,
+          "n_pos": 146,
+          "excluded": false,
+          "auroc": 0.3663587129659127,
+          "auprc": 0.20800877915077715
+        },
+        "30": {
+          "n_test": 533,
+          "n_pos": 176,
+          "excluded": false,
+          "auroc": 0.39222052457346573,
+          "auprc": 0.2629488699161371
+        },
+        "60": {
+          "n_test": 533,
+          "n_pos": 206,
+          "excluded": false,
+          "auroc": 0.5108072800688814,
+          "auprc": 0.4045944456426646
+        },
+        "90": {
+          "n_test": 533,
+          "n_pos": 210,
+          "excluded": false,
+          "auroc": 0.5550641309155242,
+          "auprc": 0.4513650929056659
+        }
+      }
+    },
+    {
+      "fold_clip": 5,
+      "scene": null,
+      "val_clips": [
+        0,
+        8
+      ],
+      "best_epoch": 6,
+      "stopped_epoch": 28,
+      "test_n_frames": 344,
+      "horizons": {
+        "0": {
+          "n_test": 344,
+          "n_pos": 6,
+          "excluded": false,
+          "auroc": 0.9945759368836292,
+          "auprc": 0.7384920634920634
+        },
+        "30": {
+          "n_test": 344,
+          "n_pos": 36,
+          "excluded": false,
+          "auroc": 0.9635642135642136,
+          "auprc": 0.7794050941395669
+        },
+        "60": {
+          "n_test": 344,
+          "n_pos": 66,
+          "excluded": false,
+          "auroc": 0.8661979507303249,
+          "auprc": 0.6692185110485642
+        },
+        "90": {
+          "n_test": 344,
+          "n_pos": 80,
+          "excluded": false,
+          "auroc": 0.7423295454545454,
+          "auprc": 0.3728208328014438
+        }
+      }
+    },
+    {
+      "fold_clip": 6,
+      "scene": null,
+      "val_clips": [
+        1,
+        3
+      ],
+      "best_epoch": 8,
+      "stopped_epoch": 30,
+      "test_n_frames": 660,
+      "horizons": {
+        "0": {
+          "n_test": 660,
+          "n_pos": 32,
+          "excluded": false,
+          "auroc": 0.9718351910828026,
+          "auprc": 0.558913742940228
+        },
+        "30": {
+          "n_test": 660,
+          "n_pos": 62,
+          "excluded": false,
+          "auroc": 0.9577624339195167,
+          "auprc": 0.6907030201917099
+        },
+        "60": {
+          "n_test": 660,
+          "n_pos": 92,
+          "excluded": false,
+          "auroc": 0.8567819963257808,
+          "auprc": 0.6435007232737511
+        },
+        "90": {
+          "n_test": 660,
+          "n_pos": 122,
+          "excluded": false,
+          "auroc": 0.7526357486745079,
+          "auprc": 0.518519805339169
+        }
+      }
+    },
+    {
+      "fold_clip": 7,
+      "scene": null,
+      "val_clips": [
+        0,
+        3
+      ],
+      "best_epoch": 8,
+      "stopped_epoch": 30,
+      "test_n_frames": 432,
+      "horizons": {
+        "0": {
+          "n_test": 432,
+          "n_pos": 84,
+          "excluded": false,
+          "auroc": 0.4556650246305418,
+          "auprc": 0.17600541600665498
+        },
+        "30": {
+          "n_test": 432,
+          "n_pos": 114,
+          "excluded": false,
+          "auroc": 0.5260675273088381,
+          "auprc": 0.25226050196645644
+        },
+        "60": {
+          "n_test": 432,
+          "n_pos": 144,
+          "excluded": false,
+          "auroc": 0.6927083333333333,
+          "auprc": 0.4551784785620452
+        },
+        "90": {
+          "n_test": 432,
+          "n_pos": 174,
+          "excluded": false,
+          "auroc": 0.6374186937538983,
+          "auprc": 0.4839429507939775
+        }
+      }
+    },
+    {
+      "fold_clip": 8,
+      "scene": null,
+      "val_clips": [
+        7,
+        10
+      ],
+      "best_epoch": 6,
+      "stopped_epoch": 28,
+      "test_n_frames": 407,
+      "horizons": {
+        "0": {
+          "n_test": 407,
+          "n_pos": 0,
+          "excluded": true,
+          "auroc": NaN,
+          "auprc": NaN
+        },
+        "30": {
+          "n_test": 407,
+          "n_pos": 0,
+          "excluded": true,
+          "auroc": NaN,
+          "auprc": NaN
+        },
+        "60": {
+          "n_test": 407,
+          "n_pos": 13,
+          "excluded": false,
+          "auroc": 0.5423662631784459,
+          "auprc": 0.03553030507960855
+        },
+        "90": {
+          "n_test": 407,
+          "n_pos": 40,
+          "excluded": false,
+          "auroc": 0.7105585831062671,
+          "auprc": 0.18757864371250293
+        }
+      }
+    },
+    {
+      "fold_clip": 9,
+      "scene": null,
+      "val_clips": [
+        3,
+        10
+      ],
+      "best_epoch": 4,
+      "stopped_epoch": 26,
+      "test_n_frames": 458,
+      "horizons": {
+        "0": {
+          "n_test": 458,
+          "n_pos": 0,
+          "excluded": true,
+          "auroc": NaN,
+          "auprc": NaN
+        },
+        "30": {
+          "n_test": 458,
+          "n_pos": 0,
+          "excluded": true,
+          "auroc": NaN,
+          "auprc": NaN
+        },
+        "60": {
+          "n_test": 458,
+          "n_pos": 18,
+          "excluded": false,
+          "auroc": 0.2340909090909091,
+          "auprc": 0.025915035464645308
+        },
+        "90": {
+          "n_test": 458,
+          "n_pos": 30,
+          "excluded": false,
+          "auroc": 0.4598130841121495,
+          "auprc": 0.05759124725330056
+        }
+      }
+    },
+    {
+      "fold_clip": 10,
+      "scene": null,
+      "val_clips": [
+        6,
+        8
+      ],
+      "best_epoch": 1,
+      "stopped_epoch": 23,
+      "test_n_frames": 573,
+      "horizons": {
+        "0": {
+          "n_test": 573,
+          "n_pos": 0,
+          "excluded": true,
+          "auroc": NaN,
+          "auprc": NaN
+        },
+        "30": {
+          "n_test": 573,
+          "n_pos": 0,
+          "excluded": true,
+          "auroc": NaN,
+          "auprc": NaN
+        },
+        "60": {
+          "n_test": 573,
+          "n_pos": 9,
+          "excluded": false,
+          "auroc": 0.8971631205673759,
+          "auprc": 0.07390094013783166
+        },
+        "90": {
+          "n_test": 573,
+          "n_pos": 20,
+          "excluded": false,
+          "auroc": 0.7247739602169982,
+          "auprc": 0.05950460082830298
+        }
+      }
+    }
+  ],
+  "common_fold_subset": [
+    0,
+    1,
+    2,
+    4,
+    5,
+    6,
+    7
+  ],
+  "aggregate_full_set": {
+    "0": {
+      "auroc_mean": 0.8208667037834888,
+      "auroc_std": 0.2604203748079753,
+      "auprc_mean": 0.618748880662101,
+      "auprc_std": 0.2959988356190418,
+      "n_folds": 7
+    },
+    "30": {
+      "auroc_mean": 0.8376631265791021,
+      "auroc_std": 0.22323645702245573,
+      "auprc_mean": 0.670279049881683,
+      "auprc_std": 0.2749200567339271,
+      "n_folds": 8
+    },
+    "60": {
+      "auroc_mean": 0.7591927818916258,
+      "auroc_std": 0.2273806925735165,
+      "auprc_mean": 0.4946153926502055,
+      "auprc_std": 0.325970300004892,
+      "n_folds": 11
+    },
+    "90": {
+      "auroc_mean": 0.7317423046845861,
+      "auroc_std": 0.1414292914039953,
+      "auprc_mean": 0.43539177912359756,
+      "auprc_std": 0.2803044598035239,
+      "n_folds": 11
+    }
+  },
+  "aggregate_full_set_excluded_folds": {
+    "0": [
+      3,
+      8,
+      9,
+      10
+    ],
+    "30": [
+      8,
+      9,
+      10
+    ],
+    "60": [],
+    "90": []
+  },
+  "aggregate_common_subset": {
+    "0": {
+      "auroc_mean": 0.8208667037834888,
+      "auroc_std": 0.2604203748079753,
+      "auprc_mean": 0.618748880662101,
+      "auprc_std": 0.2959988356190418,
+      "n_folds": 7
+    },
+    "30": {
+      "auroc_mean": 0.8149060425611667,
+      "auroc_std": 0.22980568594965645,
+      "auprc_mean": 0.6301582162625242,
+      "auprc_std": 0.27111045416427004,
+      "n_folds": 7
+    },
+    "60": {
+      "auroc_mean": 0.8231825050991322,
+      "auroc_std": 0.15763071305336684,
+      "auprc_mean": 0.6613040216236591,
+      "auprc_std": 0.21839678059544132,
+      "n_folds": 7
+    },
+    "90": {
+      "auroc_mean": 0.7727389499467067,
+      "auroc_std": 0.13817435714209741,
+      "auprc_mean": 0.5810450303761269,
+      "auprc_std": 0.22990993516817246,
+      "n_folds": 7
+    }
+  }
+}
